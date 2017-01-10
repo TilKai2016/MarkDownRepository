@@ -269,13 +269,129 @@ apt-get install docker.io
 
 ## 在路由器配置科学上网
 
-[参考网件 R6300 V2 刷梅林固件](http://broccoliii.me/2016/08/09/R6300_v2_Merlin/)
+[参考网件 R6300 V2 刷梅林固件](http://broccoliii.me/2016/08/09/R6300_v2_Merlin/)，虽然该教程已经很是详细，但为了防止后面链接失效，本人还是Copy并整理了一下，以供以后使用时参考。
 
+**注：**
 坑1:刷梅林时在ASUS登录页面默认用户名密码为admin和admin，如果该用户名密码的组合不正确，建议再尝试admin和password的组合，以及adsl和ads11234的组合
 
 
 ```
 WPA 密钥应为 8~63 个字符的字符串或 64 个十六进制字符。如果您将本字段保留空白，系统将会指定 00000000 作为您的通关密语。
 ```
+
+下面开始关于网件 R6300 V2 刷梅林固件的教程整理。
+
+### 刷机文件整理打包
+
+[参考的博主提供的百度云盘地址](https://pan.baidu.com/s/1slPA8cl)，密码是`gnif`；
+防止博主网盘链接失效，[本人的存储地址](https://pan.baidu.com/s/1kVv2QuN)，密码是`1a89`；
+
+简单介绍压缩包里的几个文件各是什么：
+
+```
+factory-to-dd-wrt.chk （DD 过渡固件）
+R6300V2_merlin_1.2.trx （1.2 正式过渡固件）
+R6300V2_380.57_X6.5.trx (最新正式版固件)
+R6300V2-back-to-ofw.trx （刷回需要的网件原厂固件）
+```
+
+### 刷merlin的四个步骤
+
+```
+1. 原厂固件恢复出厂设置
+2. 刷入 DD 过渡固件
+3. 刷入 Merlin 1.2 固件
+4. 刷入 Merlin 最新正式版固件
+```
+
+### 恢复出厂设置
+
+登录 `192.168.1.1) -> 高级 -> 管理 -> 备份设置 -> 恢复出厂缺省设置 -> 抹除。
+
+![reset](http://ohx3k2vj3.bkt.clouddn.com/reset.jpg)
+
+### 刷入 DD 过渡固件
+
+高级 -> 管理 -> 路由升级 -> 上传升级。
+
+![upload_dd](http://ohx3k2vj3.bkt.clouddn.com/upload_dd.jpg)
+
+耐心等待。。
+
+### 在 DD 固件中刷入 Merlin 1.2 固件
+
+安装好 DD 固件后，浏览器会跳转到新的路由系统后台，之后设置好登录名与密码。
+
+![setup_username_password](http://ohx3k2vj3.bkt.clouddn.com/setup_username_password.jpg)
+
+我们要开启 `SSH` 服务，等会我们会连上来查看一些配置项是否正确。
+选择 `SSHd` 为 `enable`，然后点击 `save` 再点击 `Apply Setting`
+
+![setup_ssh](http://ohx3k2vj3.bkt.clouddn.com/setup_ssh.jpg)
+
+当然我们有需要可以设置一下简体中文
+
+![setup_chinese](http://ohx3k2vj3.bkt.clouddn.com/setup_chinese.png)
+
+接着打开 `Terminal`，`SSH` 到 `root@192.168.1.1`，输入我们刚刚设置过的密码
+
+```
+ssh root@192.168.1.1
+```
+
+连上后运行
+
+```
+nvram get boardnum
+nvram get boardtype
+nvram get boardrev
+```
+
+如果运行结果如下图所示那么恭喜你 DD 固件已经刷入成功
+
+![terminal](http://ohx3k2vj3.bkt.clouddn.com/terminal.png)
+
+如果数值不对，那么回到开头第一步重新开始.
+
+### 刷入 Merlin
+
+进入 DD 固件升级页面，先刷入梅林过渡固件 R6300V2_merlin_1.2.trx
+
+![upload_merlin](http://ohx3k2vj3.bkt.clouddn.com/upload_merlin.jpg)
+
+经过几分钟等待，路由会自动重启，进入设置向导页。
+
+![setup_guide](http://ohx3k2vj3.bkt.clouddn.com/setup_guide.png)
+
+在 高级 -> 系统管理 -> 固件升级 选择 R6300V2_380.57_X6.5.trx
+如果你看到这个文章年代有点久远了，建议你网上搜一下最新版，[试试看这里~](http://koolshare.io/merlin_8wan_firmware/R6300V2/)
+
+![merlin_new](http://ohx3k2vj3.bkt.clouddn.com/merlin_new.png)
+
+重启之后需要恢复出厂设置，如图所示：
+
+![reset01](http://ohx3k2vj3.bkt.clouddn.com/reset01.png)
+
+重启后格式化JFFS分区并立即重启：
+
+![jffs](http://ohx3k2vj3.bkt.clouddn.com/jffs.png)
+
+```
+Format JFFS partition at next boot 的意思是在下次开机时格式化JFFS分区。
+Enable JFFS custom scripts and configs 的意思是启用JFFS分区的修改。
+```
+
+每次更新梅林固件都需要重复这样的操作，等待重启成功之后就开始玩耍吧~
+
+**PS**:如果你还想回到原厂
+
+和上一步相同 高级 -> 系统管理 -> 固件升级
+选择 `R6300V2_back-to-ofw.trx` 刷入，注意等3分钟左右，灯全部亮起后，找一根竹签或者笔，按住路由器背后的RESET开关10秒左右再松开，即可进入原厂系统~
+
+### shadowsocks选项配置
+
+![R6300V2SS](http://ohx3k2vj3.bkt.clouddn.com/R6300V2SS.jpeg)
+
+`DNS`设置`国外DNS`为`DNS2SOCKS`，值为`8.8.8.8:53`
 
 
