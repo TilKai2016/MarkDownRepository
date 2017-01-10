@@ -1,10 +1,13 @@
 # Dokcer+SS+KCP搭建梯子
 
+本次梯子搭建使用了[DigitalOcean](https://m.do.co/c/90e360179dca)的VPS服务器，操作系统选择了Ubuntu，分别尝试了Docker+SS+KCP的组合以及BBR+Docker+SS+KCP的组合，下面将会分别介绍这两种的搭建过程。
+**注意**，使用BBR进行TCP加速需要升级内核版本的操作，Docker的安装配置应该在BBR安装成功后进行，这点很重要，因为内核升级后可能导致Docker不能运行(暂时的个人理解)。
+
 参考：
 
 [docker compose官网](https://docs.docker.com/compose/install/)
 
-## 环境配置
+## Docker+SS+KCP组合的环境配置
 
 ### 安装Docker
 
@@ -204,6 +207,65 @@ docker logs ss : 查看某个容器(如ss容器)的运行日志
 
 lsof -i:端口号 查看端口号是否已暴露，有列表表示已经暴露
 [Linux端口以及防火墙端口的查看命令](http://blog.csdn.net/nemo2011/article/details/7362071)
+
+## Google BBR加速SS的BBR+Docker+SS+KCP的组合
+
+本次执行是在Ubuntu4和8的内核版本上进行的，其他版本不一定适配，建议先在测试环境尝试。
+
+参考了以下的链接[Shadowsocks教程:TCP加速 BBR 一键安装](https://shadowsocks.info/tcp-bbr/)，该链接还提供了其他Linux系统的BBR安装教程。
+
+### 安装4.9的内核版本，依次执行以下两步操作：
+
+```
+wget http://kernel.ubuntu.com/~kernel-ppa/mainline/v4.9-rc8/linux-image-4.9.0-040900rc8-generic_4.9.0-040900rc8.201612051443_amd64.deb
+dpkg -i linux-image-4.9.0*.deb
+```
+
+### 删除其他版本的内核
+
+```
+dpkg -l|grep linux-image
+apt-get remove 列表中其他内核的名称
+```
+
+### 更新 grub 系统引导文件并重启
+
+```
+update-grub
+reboot
+```
+
+### 开启BBR
+
+```
+echo "net.core.default_qdisc=fq" >> /etc/sysctl.conf
+echo "net.ipv4.tcp_congestion_control=bbr" >> /etc/sysctl.conf
+```
+
+### 保存生效
+
+```
+sysctl -p
+```
+
+### 查看是否配置启动成功
+
+执行`sysctl net.ipv4.tcp_available_congestion_control`，如果结果中有`bbr`, 则证明你的内核已开启`bbr`，
+执行`lsmod | grep bbr`, 看到有`tcp_bbr`模块即说明`bbr`已启动成功。
+
+### 在SSR配置成功的基础上拉取Docker仓库
+
+#### 更新源并采用下面的方式安装docker
+
+```
+apt-get update
+apt-get install docker.io
+```
+
+### 后续步骤
+此时就可以按照 Docker+SS+KCP组合中的步骤继续安装并启动Docker-SS服务了，
+
+(开始的点:"基于docker的cndocker/kcptun-socks5-ss-server服务端安装方法")
 
 ## 在路由器配置科学上网
 
