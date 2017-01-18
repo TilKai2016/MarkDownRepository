@@ -348,4 +348,8 @@ Successfully built 4af7ae2d516b
 
 待补充和实践的内容还包括Docker中搭建MariaDB和Python环境的操作。
 
+## 搜索并下载可用的docker镜像
+
+`docker search 镜像名字`
+`docker pull 用户名/镜像名`
 
