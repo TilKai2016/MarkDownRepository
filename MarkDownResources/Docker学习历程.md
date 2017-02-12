@@ -1,105 +1,64 @@
-# Docker学习历程
+# Docker学习总结
 
 ## Mac下搭建Docker环境
 
-参考[ 在OS X安装Docker](http://blog.csdn.net/jpiverson/article/details/50685817)
+1. 访问[docker官网](https://www.docker.com/products/docker-toolbox)下载安装文件，按照默认选项安装。
 
-[docker官网](https://www.docker.com/products/docker-toolbox)下载文件，默认选项安装后，启动`Docker Quickstart Terminal`
-
-成功的执行结果：
-
-```
-Creating CA: /Users/tilkai/.docker/machine/certs/ca.pem
-Creating client certificate: /Users/tilkai/.docker/machine/certs/cert.pem
-Running pre-create checks...
-(default) Default Boot2Docker ISO is out-of-date, downloading the latest release...
-(default) Latest release for github.com/boot2docker/boot2docker is v1.12.6
-(default) Downloading /Users/tilkai/.docker/machine/cache/boot2docker.iso from https://github.com/boot2docker/boot2docker/releases/download/v1.12.6/boot2docker.iso...
-(default) 0%....10%....20%....30%....40%....50%....60%....70%....80%....90%....100%
-Creating machine...
-(default) Copying /Users/tilkai/.docker/machine/cache/boot2docker.iso to /Users/tilkai/.docker/machine/machines/default/boot2docker.iso...
-(default) Creating VirtualBox VM...
-(default) Creating SSH key...
-(default) Starting the VM...
-(default) Check network to re-create if needed...
-(default) Found a new host-only adapter: "vboxnet1"
-(default) Waiting for an IP...
-Waiting for machine to be running, this may take a few minutes...
-Detecting operating system of created instance...
-Waiting for SSH to be available...
-Detecting the provisioner...
-Provisioning with boot2docker...
-Copying certs to the local machine directory...
-Copying certs to the remote machine...
-Setting Docker configuration on the remote daemon...
-Checking connection to Docker...
-Docker is up and running!
-To see how to connect your Docker Client to the Docker Engine running on this virtual machine, run: /usr/local/bin/docker-machine env default
-                        ##         .
-                  ## ## ##        ==
-               ## ## ## ## ##    ===
-           /"""""""""""""""""\___/ ===
-      ~~~ {~~ ~~~~ ~~~ ~~~~ ~~~ ~ /  ===- ~~~
-           \______ o           __/
-             \    \         __/
-              \____\_______/
-
-
-docker is configured to use the default machine with IP 192.168.99.100
-For help getting started, check out the docs at https://docs.docker.com
-```
-
-运行`docker run hello-world`查看是否一切运行良好，正常的返回结果：
+2. 运行`docker run hello-world`测试`docker`是否能够正常运行，正常的返回结果：
 
 ```
 ➜  ~ docker run hello-world
-Unable to find image 'hello-world:latest' locally
-latest: Pulling from library/hello-world
-
-c04b14da8d14: Pull complete 
-Digest: sha256:0256e8a36e2070f7bf2d0b0763dbabdd67798512411de4cdcf9431a1feb60fd9
-Status: Downloaded newer image for hello-world:latest
 
 Hello from Docker!
 This message shows that your installation appears to be working correctly.
 
 To generate this message, Docker took the following steps:
  1. The Docker client contacted the Docker daemon.
- 2. The Docker daemon pulled the "hello-world" image from the Docker Hub.
- 3. The Docker daemon created a new container from that image which runs the
-    executable that produces the output you are currently reading.
- 4. The Docker daemon streamed that output to the Docker client, which sent it
-    to your terminal.
-
-To try something more ambitious, you can run an Ubuntu container with:
- $ docker run -it ubuntu bash
-
-Share images, automate workflows, and more with a free Docker Hub account:
- https://hub.docker.com
-
-For more examples and ideas, visit:
- https://docs.docker.com/engine/userguide/
+ ...
 ```
 
-## 关于镜像和容器
+如果以上教程在阅读上有问题，详细的安装操作在网上还有好多，比如参考[ 在OS X安装Docker](http://blog.csdn.net/jpiverson/article/details/50685817)。
 
-### 解释下`docker run hello-world`
+## 关于Docker镜像、容器和仓库的概念
 
-1⃣️ (docker)告诉Docker运行docker program；
-2⃣️ (run)Docker子命令创建，并运行docker容器；
-3⃣️ (hello-world)告诉Docker容器中加载hell-world镜像；
+*以下关于docker镜像、容器和仓库的概念摘自GitBoot中[Docker — 从入门到实践](https://www.gitbook.com/book/yeasy/docker_practice/details)，该链接地址提供PDF下载以及关于docker元素更加详细的定义。*
 
-### 通过对`whalesay`镜像的一系列操作进行具体的学习实践
+### Docker镜像
 
-[DockerHub官网](https://hub.docker.com)搜索`whalesay`，进入`docker/whalesay`详情页。
+>Docker 镜像是一个特殊的文件系统，除了提供容器运行时所需的程序、库、资源、配置等文件外，还包含了一些为运行时准备的一些配置参数（如匿名卷、环境变量、用户等）。镜像不包含任何动态数据，其内容在构建之后也不会被改变。
 
-How to use this image中描述执行下面命令来运行：
+### Docker容器
 
-```
-docker run docker/whalesay cowsay boo
-```
+>镜像（Image）和容器（Container）的关系，就像是面向对象程序设计中的类和实例一样，镜像是静态的定义，容器是镜像运行时的实体。容器可以被创建、启动、停止、删除、暂停等
 
-其中，`cowsay`为要运行的命令，`boo`为参数(像如果把参数改为`hello world!`，鲸鱼说话会变成`hello world!`具体看下面的执行结果)。
+### Docker仓库
+
+>镜像构建完成后，可以很容易的在当前宿主上运行，但是，如果需要在其它服务器上使用这个镜像，我们就需要一个集中的存储、分发镜像的服务，Docker Registry 就是这样的服务。
+
+>一个 Docker Registry 中可以包含多个仓库（Repository）；每个仓库可以包含多个标签（Tag）；每个标签对应一个镜像。
+
+>一般而言，一个仓库包含的是同一个软件的不同版本的镜像，而标签则用于对应于软件的的不同版本。我们可以通过 <仓库名>:<标签> 的格式来指定具体是哪个版本的镜像。如果不给出标签，将以 latest 作为默认标签。
+
+>以 Ubuntu 镜像 为例，ubuntu 是仓库的名字，其内包含有不同的版本标签，如，14.04, 16.04。我们可以通过 ubuntu:14.04，或者 ubuntu:16.04 来具体指定所需哪个版本的镜像。如果忽略了标签，比如 ubuntu，那将视为 ubuntu:latest。
+
+>仓库名经常以 两段式路径 形式出现，比如 jwilder/nginx-proxy，前者往往意味着 Docker Registry 多用户环境下的用户名，后者则往往是对应的软件名。但这并非绝对，取决于所使用的具体 Docker Registry 的软件或服务。
+
+## Docker具体使用及常用命令解释
+
+### 解释`docker run hello-world`命令
+
+1. `docker` : 告诉`Docker`运行`docker program`；
+2. `run` : `Docker`子命令，创建并运行`docker`容器；
+3. `hello-world` : 告诉`Docker`容器中加载`hell-world`镜像；
+
+### 实例1：运行`whalesay`镜像进行具体的学习实践
+
+1. 通过[DockerHub官网](https://hub.docker.com)搜索`whalesay`，进入`docker/whalesay`详情页(或执行`docker search whalesay`查找`docker/whalesay`镜像)；
+2. 执行`docker pull docker/whalesay`拉取`docker/whalesay`镜像到本地；
+3. 执行`docker images`查看本地镜像；
+4. 执行`docker run docker/whalesay cowsay boo`运行`docker/whalesay`镜像；
+
+Docker命令`docker run docker/whalesay cowsay boo`中，`cowsay`为要运行的命令，`boo`为参数(像如果把参数改为`hello world!`，鲸鱼说话会变成`hello world!`具体看下面的执行结果)。
 
 Docker 会先在本地查找有没有镜像，如果没有就从仓库中下载。
 
@@ -111,13 +70,7 @@ Unable to find image 'docker/whalesay:latest' locally
 latest: Pulling from docker/whalesay
 
 e190868d63f8: Pull complete 
-909cd34c6fd7: Pull complete 
-0b9bfabab7c1: Pull complete 
-a3ed95caeb02: Pull complete 
-00bf65475aba: Pull complete 
-c57b6bcc83e3: Pull complete 
-8978f6879e2f: Pull complete 
-8eed3712d2cf: Pull complete 
+...
 Digest: sha256:178598e51a26abbc958b8a2e48825c90bc22e641de3d31e18aaf55f3258ba93b
 Status: Downloaded newer image for docker/whalesay:latest
  _____ 
@@ -137,15 +90,354 @@ Status: Downloaded newer image for docker/whalesay:latest
 
 ```
 
-### 查看本地镜像
-
-运行`docker images`，运行结果：
+### 示例2：使用Docker运行RabbitMQ服务
 
 ```
-➜  ~ docker images
+# 查找rabbitMQ镜像
+docker search rabbitmq
+```
+
+```
+# 下载rabbitMQ镜像(不带web管理插件的镜像)
+docker pull rabbitmq
+# 下载rabbitMQ镜像(带web管理插件的镜像)
+docker pull rabbitmq:management
+```
+
+```
+# 查看下载的镜像
+docker images
+```
+
+```
+# 启动rabbitMQ镜像(不带web管理插件)
+docker run -d --publish 5671:5671 rabbitmq
+# 启动rabbitMQ(带web管理插件)
+docker run -d --publish 5671:5671 \
+ --publish 5672:5672 --publish 4369:4369 --publish 25672:25672 --publish 15671:15671 --publish 15672:15672 \
+rabbitmq:management
+```
+
+PS：
+
+1. docker run命令中参数的含义:
+
+    
+| Name | Default | Description |
+| --- | --- | --- |
+| -d, --detach | false | Run container in background and print container ID(服务挂在后台，以守护进程的方式运行) |
+| -p, --publish |  | Publish a container’s port(s) to the host(端口映射，如123:456，代表容器的456端口映射到服务器的123端口) |
+
+更多的参数可以从dash中查找使用。
+
+2. 关于RabbitMQ的几个内部端口代表的意义：
+
+```
+4369:epmd(Erlang Port Mapper Daemon)相当于DNS作用
+25672:Erlang distribution
+5672, 5671:AMQP 0-9-1 without and with TLS
+15672:if management plugin is enabled
+61613, 61614:if STOMP is enabled
+1883, 8883:if MQTT is enabled
+```
+
+### 示例3：使用Docker运行MySql服务
+
+```
+# 下载镜像
+docker pull mysql
+```
+
+```
+# 查看下载的镜像
+docker images
+```
+
+```
+# 运行MySql实例
+docker run --name first-mysql -p 3306:3306 -e MYSQL\_ROOT\_PASSWORD=123456 -d mysql 
+```
+
+此时，使用MySql客户端可以连接到MySql服务。
+
+## 使用Docker-compose定义、运行多个Docker容器
+
+>`Docker-compose`是容器编排工具，其使用`*.yml`文件作为配置文件，根据配置启动、停止、重启一组容器。
+
+参考自[Docker 产品全解析之 docker-compose](http://www.jianshu.com/p/15a809b7b068)
+
+### 如何安装Docker-compose
+
+> 安装Docker
+> 执行`$ curl -L "https://github.com/docker/compose/releases/download/1.10.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose`下载安装`docker-compose`
+> 执行`chmod +x /usr/local/bin/docker-compose`
+> 测试`docker-compose`是否安装成功`docker-compose --version`
+
+参考自[Install Docker Compose](https://docs.docker.com/compose/install/)
+
+### docker-compose.yml配置文件
+
+以下参考自[Docker Compose 配置文件详解](http://www.jianshu.com/p/2217cfed29d7)。
+
+> 举个标准的配置文件的例子：
+
+```
+version: '2'
+services:
+  web:
+    image: dockercloud/hello-world
+    ports:
+      - 8080
+    networks:
+      - front-tier
+      - back-tier
+
+  redis:
+    image: redis
+    links:
+      - web
+    networks:
+      - back-tier
+
+  lb:
+    image: dockercloud/haproxy
+    ports:
+      - 80:80
+    links:
+      - web
+    networks:
+      - front-tier
+      - back-tier
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock 
+
+networks:
+  front-tier:
+    driver: bridge
+  back-tier:
+    driver: bridge
+```
+
+> 从上述配置文件可以看到，一个标准的`docker-compose.yml`配置文件中，应该包括`version`,`services`,`networks`三部分。
+
+#### services部分的书写规则
+
+##### image
+
+```
+services:
+  web:
+    image: dockercloud/hello-world
+    ...
+    
+  redis:
+    image: redis
+    ...
+```
+
+`services`下的二级标签，如第一个二级标签`web`，第二个二级标签`redis`，这个标签是用户自定义的名字，为服务的名称。
+可以理解为`docker run --name(-n)`中的`--name(-n)`属性。
+
+`image`指服务的镜像名称或镜像ID，如果镜像在本地不存在，Compose会尝试拉取这个镜像。
+举例几个可行的`image`格式：
+
+```
+image: redis
+image: mysql:5
+image: tutum/influxdb
+image: example-registry.com:4000/postgresql
+image: a4bc65fd
+```
+
+##### build
+
+`docker-compose`除了基于`image`外，还可以基于一份`dockerfile`文件，在使用`up`命令启动时执行构建任务。
+
+* 可以是绝对路径：
+
+```
+build: /path/to/build/dir
+```
+
+* 可以是相对路径：
+
+```
+build: ./dir
+```
+
+* 也可以设定上下文根目录，然后以该目录为准指定`dockerfile`：
+
+```
+build:
+  context: ../
+  dockerfile: path/of/Dockerfile
+```
+
+**注意**，`build`标签指定的为`dockerfile`文件的目录，指定某个`dockerfile`文件需要在`build`下的`dockerfile`标签指定。
+如果同时指定了`image`和`build`标签，那么compose会构建镜像，并把镜像命名为`image`标签后的名字。
+举个简单的例子，根据下面的`Dockerfile`文件构建名为`whalesay`，标签为`test`的镜像：
+
+```
+#Dockerfile文件的内容
+FROM docker/whalesay:latest
+
+RUN apt-get -y update && apt-get install -y fortunes
+
+CMD /usr/games/fortune -a | cowsay
+```
+
+```
+# docker-compose.yml文件的内容
+version: '2'
+services:
+  whalesay:
+    build: ./
+    image: whalesay:test
+```
+
+执行`docker-compose up`后，执行`docker images`命令查看镜像创建结果(如下)。
+
+```
+➜  DockerBuildTest docker-compose up
+Building whalesay
+Step 1/3 : FROM docker/whalesay:latest
+ ---> 6b362a9f73eb
+Step 2/3 : RUN apt-get -y update && apt-get install -y fortunes
+ ---> Using cache
+ ---> fcc65b9434be
+Step 3/3 : CMD /usr/games/fortune -a | cowsay
+ ---> Using cache
+ ---> 4af7ae2d516b
+Successfully built 4af7ae2d516b
+WARNING: Image for service whalesay was built because it did not already exist. To rebuild this image you must use `docker-compose build` or `docker-compose up --build`.
+Creating dockerbuildtest_whalesay_1
+Attaching to dockerbuildtest_whalesay_1
+whalesay_1  |  ______________________________________
+whalesay_1  | / <Overfiend_> Intel. Bringing you the \
+whalesay_1  | | cutting-edge technology of 1979      |
+whalesay_1  | |                                      |
+whalesay_1  | \ for 22 years now.                    /
+whalesay_1  |  --------------------------------------
+whalesay_1  |     \
+whalesay_1  |      \
+whalesay_1  |       \
+whalesay_1  |                     ##        .
+whalesay_1  |               ## ## ##       ==
+whalesay_1  |            ## ## ## ##      ===
+whalesay_1  |        /""""""""""""""""___/ ===
+whalesay_1  |   ~~~ {~~ ~~~~ ~~~ ~~~~ ~~ ~ /  ===- ~~~
+whalesay_1  |        \______ o          __/
+whalesay_1  |         \    \        __/
+whalesay_1  |           \____\______/
+dockerbuildtest_whalesay_1 exited with code 0
+```
+
+```
+➜ DockerBuildTest docker images
 REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
-hello-world         latest              c54a2cc56cbb        6 months ago        1.848 kB
-docker/whalesay     latest              6b362a9f73eb        19 months ago       247 MB
+whalesay            test                4af7ae2d516b        4 weeks ago         275 MB
+```
+
+在`docker-compose.yml`中定义构建任务，可以使用`args`标签指定构建过程中的环境变量，但是在构建成功后取消。
+
+例如在`docker-compose.yml`中支持以下两种`args`标签的定义方式：
+
+```
+# 方式1
+build:
+  context: .
+  args:
+    buildno: 1
+    password: secret
+```
+
+```
+# 方式2
+build:
+  context:
+    args:
+      - buildno=1
+      - password=secret
+```
+
+**注意**：YAML 的布尔值（true, false, yes, no, on, off）必须要使用引号引起来（单引号、双引号均可），否则会当成字符串解析。
+
+##### command
+
+使用 command 可以覆盖容器启动后默认执行的命令。
+
+如：
+
+```
+command: bundle exec thin -p 3000
+```
+
+或写成类似 Dockerfile 中的格式：
+
+```
+command: [bundle, exec, thin, -p, 3000]
+```
+
+##### container_name
+
+如指定容器的名称为`app`：
+
+```
+container_name: app
+```
+
+ps:
+默认Compose的容器名称格式是：<项目名称><服务名称><序号>
+
+##### depends_on
+
+`depends_on`标签的存在是为了解决容器的依赖问题，像web服务依赖数据库服务这种服务依赖关系是非常常见的，假如直接从上到下的启动容器，很可能导致因容器的依赖问题而启动失败。
+
+于是，**`depends_on`标签解决了容器依赖和启动顺序的问题。**
+
+例如下面容器会先启动 redis 和 db 两个服务，最后才启动 web 服务：
+
+```
+version: '2'
+services:
+  web:
+    build: .
+    depends_on:
+      - db
+      - redis
+  redis:
+    image: redis
+  db:
+    image: postgres
+```
+
+注意的是，默认情况下使用 docker-compose up web 这样的方式启动 web 服务时，也会启动 redis 和 db 两个服务，因为在配置文件中定义了依赖关系。
+
+##### dns
+
+和 --dns 参数一样用途，格式如下：
+
+```
+dns: 8.8.8.8
+```
+
+也可以是一个列表：
+
+```
+dns:
+  - 8.8.8.8
+  - 9.9.9.9
+```
+
+##### tmpfs
+
+挂载临时目录到容器内部，与 run 的参数一样效果：
+
+```
+tmpfs: /run
+tmpfs:
+  - /run
+  - /tmp
 ```
 
 ## 构建自己的镜像
@@ -348,8 +640,44 @@ Successfully built 4af7ae2d516b
 
 待补充和实践的内容还包括Docker中搭建MariaDB和Python环境的操作。
 
-## 搜索并下载可用的docker镜像
+### 常用Docker命令
+#### 查看本地镜像
 
-`docker search 镜像名字`
-`docker pull 用户名/镜像名`
+```
+docker images
+```
+
+#### 搜索并下载可用的docker镜像
+
+```
+docker search 镜像名字
+```
+
+```
+docker pull 用户名/镜像名
+```
+
+#### 启动／停止／删除Docker容器
+
+```
+# 启动
+docker run [OPTIONS] IMAGE [COMMAND] [ARG...]
+```
+
+```
+# 停止
+docker stop [OPTIONS] CONTAINER [CONTAINER...]
+```
+
+```
+# 删除
+docker rm [OPTIONS] CONTAINER [CONTAINER...]
+```
+
+### Docker清理命令集合
+
+```
+# 删除某个镜像
+docker rmi [REPOSITORY:TAG]
+```
 
