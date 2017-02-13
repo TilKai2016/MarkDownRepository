@@ -2,7 +2,7 @@
 
 ## Mac下搭建Docker环境
 
-1. 访问[docker官网](https://www.docker.com/products/docker-toolbox)下载安装文件，按照默认选项安装。
+1. 使用homebrew执行`brew cask install docker`安装，或访问[docker官网](https://www.docker.com/products/docker-toolbox)下载安装文件，按照默认选项安装。
 
 2. 运行`docker run hello-world`测试`docker`是否能够正常运行，正常的返回结果：
 
@@ -161,6 +161,8 @@ docker run --name first-mysql -p 3306:3306 -e MYSQL\_ROOT\_PASSWORD=123456 -d my
 此时，使用MySql客户端可以连接到MySql服务。
 
 ## 使用Docker-compose定义、运行多个Docker容器
+
+[利用docker搭建一个mysql + java service + nginx](http://www.jb51.net/article/96042.htm)
 
 >`Docker-compose`是容器编排工具，其使用`*.yml`文件作为配置文件，根据配置启动、停止、重启一组容器。
 
@@ -380,10 +382,10 @@ command: [bundle, exec, thin, -p, 3000]
 
 ##### container_name
 
-如指定容器的名称为`app`：
+如指定容器的名称为`mysql`：
 
 ```
-container_name: app
+container_name: mysql
 ```
 
 ps:
@@ -440,6 +442,319 @@ tmpfs:
   - /tmp
 ```
 
+##### entrypoint
+
+在 Dockerfile 中有一个指令叫做 ENTRYPOINT 指令，用于指定接入点，第四章有对比过与 CMD 的区别。
+在 docker-compose.yml 中可以定义接入点，覆盖 Dockerfile 中的定义：
+
+```
+entrypoint: /code/entrypoint.sh
+```
+
+格式和 Docker 类似，不过还可以写成这样
+
+```
+entrypoint:
+    - php
+    - -d
+    - zend_extension=/usr/local/lib/php/extensions/no-debug-non-zts-20100525/xdebug.so
+    - -d
+    - memory_limit=-1
+    - vendor/bin/phpunit
+```
+
+##### env_file
+
+`.env`文件可以设置compose变量，`docker-compose.yml`中可以定义一个专门存放变量的文件。
+如果通过 docker-compose -f FILE 指定了配置文件，则 env_file 中路径会使用配置文件路径。
+
+如果有变量名称与 environment 指令冲突，则以后者为准。格式如下：
+
+```
+env_file: .env
+```
+
+或者根据 docker-compose.yml 设置多个：
+
+```
+env_file:
+  - ./common.env
+  - ./apps/web.env
+  - /opt/secrets.env
+```
+
+注意的是这里所说的环境变量是对宿主机的 Compose 而言的，如果在配置文件中有 build 操作，这些变量并不会进入构建过程中，如果要在构建中使用变量还是首选前面刚讲的 arg 标签。
+
+##### environment
+
+`environment`用于设置镜像变量，它可以保存变量到镜像里面，也就是说启动的容器也会包含这些变量设置，这是与`arg`最大的不同。
+
+一般`arg`标签的变量仅用在构建过程中。而`environment`和`Dockerfile `中的`ENV`指令一样会把变量一直保存在镜像、容器中，类似`docker run -e`的效果。
+
+```
+environment:
+  MYSQL_ROOT_PASSWORD: password
+```
+
+```
+environment:
+  - MYSQL_ROOT_PASSWORD=password
+```
+
+##### expose
+
+这个标签与Dockerfile中的EXPOSE指令一样，用于指定暴露的端口，但是只是作为一种参考，实际上docker-compose.yml的端口映射还得ports这样的标签。
+
+```
+expose:
+ - "3000"
+ - "8000"
+```
+
+##### external_links
+
+在使用Docker过程中，我们会有许多单独使用docker run启动的容器，为了使Compose能够连接这些不在docker-compose.yml中定义的容器，我们需要一个特殊的标签，就是external_links，它可以让Compose项目里面的容器连接到那些项目配置外部的容器（前提是外部容器中必须至少有一个容器是连接到与项目内的服务的同一个网络里面）。
+格式如下：
+
+```
+external_links:
+ - redis_1
+ - project_db_1:mysql
+ - project_db_1:postgresql
+```
+
+##### labels
+
+向容器添加元数据，和Dockerfile的LABEL指令一个意思，格式如下：
+
+```
+labels:
+  com.example.description: "Accounting webapp"
+  com.example.department: "Finance"
+  com.example.label-with-empty-value: ""
+labels:
+  - "com.example.description=Accounting webapp"
+  - "com.example.department=Finance"
+  - "com.example.label-with-empty-value"
+```
+
+##### links
+
+解决容器的链接顺序的问题：
+
+```
+links:
+ - db
+ - db:database
+ - redis
+```
+
+##### logging
+
+用于配置日志服务。格式如下：
+
+```
+logging:
+  driver: syslog
+  options:
+    syslog-address: "tcp://192.168.0.42:123"
+```
+
+##### pid
+
+将PID模式设置为主机PID模式，跟主机系统共享进程命名空间。容器使用这个标签将能够访问和操纵其他容器和宿主机的名称空间。
+
+```
+pid: "host"
+```
+
+##### extra_hosts
+
+添加主机名的标签，就是往/etc/hosts文件中添加一些记录，与Docker client的--add-host类似：
+
+```
+extra_hosts:
+ - "somehost:162.242.195.82"
+ - "otherhost:50.31.209.229"
+```
+
+##### ports
+
+映射端口的标签。
+使用HOST:CONTAINER格式或者只是指定容器的端口，宿主机会随机映射端口:
+
+```
+ports:
+ - "3000"
+ - "8000:8000"
+ - "49100:22"
+ - "127.0.0.1:8001:8001"
+```
+
+##### security_opt
+
+为每个容器覆盖默认的标签。简单说来就是管理全部服务的标签。比如设置全部服务的user标签值为USER:
+
+```
+security_opt:
+  - label:user:USER
+  - label:role:ROLE
+```
+
+##### stop_signal
+
+设置另一个信号来停止容器。在默认情况下使用的是SIGTERM停止容器。设置另一个信号可以使用stop_signal标签。
+
+```
+stop_signal: SIGUSR1
+```
+
+##### volumes
+
+挂载一个目录或者一个已存在的数据卷容器，可以直接使用 [HOST:CONTAINER] 这样的格式，或者使用 [HOST:CONTAINER:ro] 这样的格式，后者对于容器来说，数据卷是只读的，这样可以有效保护宿主机的文件系统。
+Compose的数据卷指定路径可以是相对路径，使用 . 或者 .. 来指定相对目录。
+数据卷的格式可以是下面多种形式：
+
+```
+volumes:
+  // 只是指定一个路径，Docker 会自动在创建一个数据卷（这个路径是容器内部的）。
+  - /var/lib/mysql
+
+  // 使用绝对路径挂载数据卷
+  - /opt/data:/var/lib/mysql
+
+  // 以 Compose 配置文件为中心的相对路径作为数据卷挂载到容器。
+  - ./cache:/tmp/cache
+
+  // 使用用户的相对路径（~/ 表示的目录是 /home/<用户目录>/ 或者 /root/）。
+  - ~/configs:/etc/configs/:ro
+
+  // 已经存在的命名的数据卷。
+  - datavolume:/var/lib/mysql
+```
+
+如果你不使用宿主机的路径，你可以指定一个volume_driver。
+
+```
+volume_driver: mydriver
+```
+
+##### volumes_from
+
+从其它容器或者服务挂载数据卷，可选的参数是 :ro或者 :rw，前者表示容器只读，后者表示容器对数据卷是可读可写的。默认情况下是可读可写的。
+
+```
+volumes_from:
+  - service_name
+  - service_name:ro
+  - container:container_name
+  - container:container_name:rw
+```
+
+##### cap_add, cap_drop
+
+添加或删除容器的内核功能。
+
+```
+cap_add:
+  - ALL
+
+cap_drop:
+  - NET_ADMIN
+  - SYS_ADMIN
+```
+
+##### cgroup_parent
+
+指定一个容器的父级cgroup。
+
+```
+cgroup_parent: m-executor-abcd
+```
+
+##### devices
+
+设备映射列表。与Docker client的--device参数类似。
+
+```
+devices:
+  - "/dev/ttyUSB0:/dev/ttyUSB0"
+```
+
+##### extends
+
+这个标签可以扩展另一个服务，扩展内容可以是来自在当前文件，也可以是来自其他文件，相同服务的情况下，后来者会有选择地覆盖原有配置。
+
+```
+extends:
+  file: common.yml
+  service: webapp
+```
+  
+用户可以在任何地方使用这个标签，只要标签内容包含file和service两个值就可以了。file的值可以是相对或者绝对路径，如果不指定file的值，那么Compose会读取当前YML文件的信息。
+
+##### network_mode
+
+网络模式，与Docker client的--net参数类似，只是相对多了一个service:[service name] 的格式。
+
+```
+network_mode: "bridge"
+network_mode: "host"
+network_mode: "none"
+network_mode: "service:[service name]"
+network_mode: "container:[container name/id]"
+```
+
+可以指定使用服务或者容器的网络。
+
+##### networks
+
+加入指定网络，格式如下：
+
+```
+services:
+  some-service:
+    networks:
+     - some-network
+     - other-network
+```
+
+关于这个标签还有一个特别的子标签aliases，这是一个用来设置服务别名的标签，例如：
+
+```
+services:
+  some-service:
+    networks:
+      some-network:
+        aliases:
+         - alias1
+         - alias3
+      other-network:
+        aliases:
+         - alias2
+```
+
+相同的服务可以在不同的网络有不同的别名。
+
+### 最基础的 ExpressJS + MongoDB 组成的 web 应用
+
+```
+mongodb:  // 容器名
+  image: mongo:3.0.7  // 使用的镜像
+  volumes:
+    - ./mongodb/data/db:/data/db  // 挂载目录，宿主机目录:容器内目录
+  ports:
+    - 27017:27017  // 端口映射，宿主机端口:容器内端口
+  command: /bin/bash -c "mongod"  // 容器启动命令
+nodejs:
+  image: nodejs:5.1.0
+  volumes:
+    - ./nodejs/code:/code
+  ports:
+    - 3000:3000
+  command: /bin/bash -c "cd /code && npm install && npm start"
+```
+
 ## 构建自己的镜像
 
 下面基于`Docker run docker/whalesay cowsay boo-boo`改进并构建一个新的版本。
@@ -477,7 +792,7 @@ touch Dockerfile
 `Dockerfile`中插入：
 
 ```
-echo FROM docker/whalesay:latest
+FROM docker/whalesay:latest
 ```
 
 其中，`FROM`关键字告诉Docker你的镜像是根据哪个镜像构建的。
@@ -487,7 +802,7 @@ echo FROM docker/whalesay:latest
 `Dockerfile`文件中插入：
 
 ```
-echo RUN apt-get -y update && apt-get install -y fortunes
+RUN apt-get -y update && apt-get install -y fortunes
 ```
 
 `fortunes`程序是一个让`whalesay`聪明的说出语句的命令，这一行使用了`apt-get`命令安装`fortunes`。
@@ -605,7 +920,7 @@ Removing intermediate container 02ceaeb0a6d3
 Successfully built 4af7ae2d516b
 ```
 
-使用`docker run docker-whale`命令看一下新建的镜像吧！，会输出类似如下的结果：
+使用`docker run docker-whale`命令看查看新建的镜像，会输出类似如下的结果：
 
 ```
 ➜  DockerBuild docker run docker-whale
@@ -633,6 +948,8 @@ Successfully built 4af7ae2d516b
 `docker build -t docker-whale .`命令会使用当前目录下的`Dockerfile`文件构建一个名为`docker-whale`的镜像。
 
 构建过程首先会检查需要构建的内容(Sending build context to Docker daemon 2.048 kB)，之后会根据Dockerfile文件中的命令分步执行操作。所以出现了上面的输出结果。
+
+## 使用Docker搭建自己的Docker仓库
 
 ## Docker Hub使用
 
@@ -674,10 +991,56 @@ docker stop [OPTIONS] CONTAINER [CONTAINER...]
 docker rm [OPTIONS] CONTAINER [CONTAINER...]
 ```
 
-### Docker清理命令集合
+#### Docker清理命令集合
+[Docker 清理命令集锦](http://www.jb51.net/article/56051.htm)
 
 ```
+# 杀死所有正在运行的容器
+docker kill $(docker ps -a -q)
+# 删除所有已经停止的容器
+docker rm $(docker ps -a -q)
+# docker rmi $(docker images -q -f dangling=true)
+删除所有未打 dangling 标签的镜像
+# 删除所有镜像
+docker rmi $(docker images -q)
 # 删除某个镜像
 docker rmi [REPOSITORY:TAG]
 ```
+
+#### Docker-compose常用命令
+
+```
+# 启动所有容器
+docker-compose up
+# 后台启动并运行所有容器
+docker-compose up -d
+# 不重新创建已经停止的容器
+docker-compose up --no-recreate -d
+# 只启动test2这个容器
+docker-compose up -d test2
+# 停止容器
+docker-compose stop
+# 启动容器
+docker-compose start
+# 重启容器
+docker-compose restart
+# 停止并销毁容器
+docker-compose down
+# 删除容器
+docker-compose rm  // 出现删除确认提示，y: 确认删除，n: 取消删除
+```
+
+* up
+构建，（重新）创建，启动，链接一个服务相关的容器。
+链接的服务都将会启动，除非他们已经运行。
+默认情况， docker-compose up 将会整合所有容器的输出，并且退出时，所有容器将会停止。
+如果使用 docker-compose up -d ，将会在后台启动并运行所有的容器。
+默认情况，如果该服务的容器已经存在， docker-compose up 将会停止并尝试重新创建他们（保持使用 volumes-from挂载的卷），以保证 docker-compose.yml 的修改生效。如果你不想容器被停止并重新创建，可以使用 docker-compose up --no-recreate。如果需要的话，这样将会启动已经停止的容器。
+
+* start
+启动一个已经存在的服务容器。
+
+* stop
+停止一个已经运行的容器，但不删除它。通过 docker-compose start 可以再次启动这些容器。
+
 
