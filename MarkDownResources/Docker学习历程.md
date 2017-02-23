@@ -1,8 +1,66 @@
-# Docker学习总结
+# 浅谈Docker
 
-## Mac下搭建Docker环境
+## 认识Docker
 
-1. 使用homebrew执行`brew cask install docker`安装，或访问[docker官网](https://www.docker.com/products/docker-toolbox)下载安装文件，按照默认选项安装。
+### 什么是Docker?
+
+Docker是一个开源平台，包括Docker引擎和DockerHub注册服务器。
+>* **Docker容器引擎**：该引擎可以让开发者打包他们的应用和依赖包到一个可移植的容器中，然后将其发布到任何流行的Linux机器上。
+>* **Docker Hub注册服务器**：用户可以在该服务器上创建自己的镜像库来存储、管理和分享镜像。利用Docker，可以实现软件的一次配置、处处运行。
+
+一般称Docker为“应用程序执行容器”或“软件工业上的集装箱技术”。
+
+<!-- more -->
+
+### Docker解决了什么问题?
+
+用比较多的专业名词来描述-Docker产生的目的就是为了解决以下问题:
+>* **环境管理复杂**: 从各种OS到各种中间件再到各种App，一款产品能够成功发布，作为开发者需要关心的东西太多，且难于管理，这个问题在软件行业中普遍存在并需要直接面对。Docker可以简化部署多种应用实例工作，比如Web应用、后台应用、数据库应用、大数据应用比如Hadoop集群、消息队列等等都可以打包成一个Image部署。
+>
+>* **云计算时代的到来**: 亚马逊云服务(AWS)的成功, 引导开发者将应用转移到云上, 解决了硬件管理的问题，然而软件配置和管理相关的问题依然存在 (AWS cloudformation是这个方向的业界标准, 样例模板可[参考这里](https://s3-us-west-2.amazonaws.com/cloudformation-templates-us-west-2/LAMP_Single_Instance.template))。Docker的出现正好能帮助软件开发者开阔思路，尝试新的软件管理方法来解决这个问题。
+>
+>* **虚拟化手段的变化**: 云时代采用标配硬件来降低成本，采用虚拟化手段来满足用户按需分配的资源需求以及保证可用性和隔离性。然而无论是KVM(kernel-based virtual machine)还是Xen(虚拟机监视器)，在 Docker 看来都在浪费资源，因为用户需要的是高效运行环境而非OS, GuestOS既浪费资源又难于管理, 更加轻量级的LXC(Linux Containers)更加灵活和快速。
+>
+>* **LXC的便携性**: LXC在 Linux 2.6 的 Kernel 里就已经存在了，但是其设计之初并非为云计算考虑的，缺少标准化的描述手段和容器的可便携性，决定其构建出的环境难于分发和标准化管理(相对于KVM之类image和snapshot的概念)。Docker就在这个问题上做出了实质性的创新方法。
+
+通俗来讲-Docker的出现，解决了如下问题：
+>* **更高效的利用系统资源**: 由于容器不需要进行硬件虚拟以及运行完整操作系统等额外开销，Docker 对系统资源的利用率更高。无论是应用执行速度、内存损耗或者文件存储速度，都要比传统虚拟机技术更高效。因此，相比虚拟机技术，一个相同配置的主机，往往可以运行更多数量的应用。
+>
+>* **更快速的启动时间**: 传统的虚拟机技术启动应用服务往往需要数分钟，而 Docker 容器应用，由于直接运行于宿主内核，无需启动完整的操作系统，因此可以做到秒级、甚至毫秒级的启动时间。大大的节约了开发、测试、部署的时间。
+>
+>* **一致的运行环境**: 开发过程中一个常见的问题是环境一致性问题。由于开发环境、测试环境、生产环境不一致，导致有些 bug 并未在开发过程中被发现。而 Docker 的镜像提供了除内核外完整的运行时环境，确保了应用运行环境一致性，从而不会再出现 “这段代码在我机器上没问题啊” 这类问题。
+>
+>* **持续交付和部署**: 对开发和运维（[DevOps](https://zh.wikipedia.org/wiki/DevOps)）人员来说，最希望的就是一次创建或配置，可以在任意地方正常运行。
+>使用 Docker 可以通过定制应用镜像来实现持续集成、持续交付、部署。开发人员可以通过 [Dockerfile](https://docs.docker.com/engine/reference/builder/) 来进行镜像构建，并结合 持续集成(Continuous Integration) 系统进行集成测试，而运维人员则可以直接在生产环境中快速部署该镜像，甚至结合 持续部署(Continuous Delivery/Deployment) 系统进行自动部署。
+>而且使用 Dockerfile 使镜像构建透明化，不仅仅开发团队可以理解应用运行环境，也方便运维团队理解应用运行所需条件，帮助更好的生产环境中部署该镜像。
+>
+>* **更轻松的迁移**: 由于 Docker 确保了执行环境的一致性，使得应用的迁移更加容易。Docker 可以在很多平台上运行，无论是物理机、虚拟机、公有云、私有云，甚至是笔记本，其运行结果是一致的。因此用户可以很轻易的将在一个平台上运行的应用，迁移到另一个平台上，而不用担心运行环境的变化导致应用无法正常运行的情况。
+>
+>* **更轻松的维护和扩展**: Docker 使用的分层存储以及镜像的技术，使得应用重复部分的复用更为容易，也使得应用的维护更新更加简单，基于基础镜像进一步扩展镜像也变得非常简单。此外，Docker 团队同各个开源项目团队一起维护了一大批高质量的[官方镜像](https://hub.docker.com/explore/)，既可以直接在生产环境使用，又可以作为基础进一步定制，大大的降低了应用服务的镜像制作成本。
+>
+>* 对比传统虚拟机总结:
+
+| 特性 | 容器 | 虚拟机 |
+| --- | --- | --- |
+| 启动 | 秒级 | 分钟级 |
+| 硬盘使用 | 一般为MB | 一般为GB |
+| 性能 | 接近原生 | 弱于原生 |
+| 系统支持量 | 单机支持上千个容器 | 一般几十个 |
+
+### Docker的组成
+
+Docker为C/S架构，由以下几部分组成：
+* `Docker Client`：CLI客户端
+* `Docker Server`：Docker守护进程，通过`Remote API`实现与`Docker Client`通信。
+* `Docker images`：镜像，`docker run`后变为容器
+* `Docker Registry`：`Docker images`的中央存储仓库(pull/push)
+
+## Docker环境搭建
+
+### Mac下搭建Docker环境
+
+1. 使用homebrew执行`brew cask install docker`安装(**推荐**)
+或访问[docker官网](https://www.docker.com/products/docker-toolbox)下载安装文件，按照默认选项安装。
 
 2. 运行`docker run hello-world`测试`docker`是否能够正常运行，正常的返回结果：
 
@@ -17,11 +75,9 @@ To generate this message, Docker took the following steps:
  ...
 ```
 
-如果以上教程在阅读上有问题，详细的安装操作在网上还有好多，比如参考[ 在OS X安装Docker](http://blog.csdn.net/jpiverson/article/details/50685817)。
+Mac下Docker的安装操作在网上有很多，比如参考[ 在OS X安装Docker](http://blog.csdn.net/jpiverson/article/details/50685817)。
 
 ## 关于Docker镜像、容器和仓库的概念
-
-*以下关于docker镜像、容器和仓库的概念摘自GitBoot中[Docker — 从入门到实践](https://www.gitbook.com/book/yeasy/docker_practice/details)，该链接地址提供PDF下载以及关于docker元素更加详细的定义。*
 
 ### Docker镜像
 
@@ -43,76 +99,100 @@ To generate this message, Docker took the following steps:
 
 >仓库名经常以 两段式路径 形式出现，比如 jwilder/nginx-proxy，前者往往意味着 Docker Registry 多用户环境下的用户名，后者则往往是对应的软件名。但这并非绝对，取决于所使用的具体 Docker Registry 的软件或服务。
 
-## Docker具体使用及常用命令解释
+*以上关于docker镜像、容器和仓库的概念摘自GitBoot中[Docker — 从入门到实践](https://www.gitbook.com/book/yeasy/docker_practice/details)，该链接地址提供PDF下载以及关于docker元素更加详细的定义。*
 
-### 解释`docker run hello-world`命令
+---
 
-1. `docker` : 告诉`Docker`运行`docker program`；
-2. `run` : `Docker`子命令，创建并运行`docker`容器；
-3. `hello-world` : 告诉`Docker`容器中加载`hell-world`镜像；
+## Docker实践
 
-### 实例1：运行`whalesay`镜像进行具体的学习实践
+### 解释<font color='#43BC9F'>`docker run hello-world`</font>命令
 
-1. 通过[DockerHub官网](https://hub.docker.com)搜索`whalesay`，进入`docker/whalesay`详情页(或执行`docker search whalesay`查找`docker/whalesay`镜像)；
-2. 执行`docker pull docker/whalesay`拉取`docker/whalesay`镜像到本地；
-3. 执行`docker images`查看本地镜像；
-4. 执行`docker run docker/whalesay cowsay boo`运行`docker/whalesay`镜像；
+* <font color='red'>`docker`</font> : 告诉`Docker`运行`docker program`；
+* <font color='red'>`run`</font> : `Docker`子命令，创建并运行`docker`容器；
+* <font color='red'>`hello-world`</font> : 告诉`Docker`容器中加载`hell-world`镜像；
 
-Docker命令`docker run docker/whalesay cowsay boo`中，`cowsay`为要运行的命令，`boo`为参数(像如果把参数改为`hello world!`，鲸鱼说话会变成`hello world!`具体看下面的执行结果)。
+### 示例 - Ubuntu14.04
 
-Docker 会先在本地查找有没有镜像，如果没有就从仓库中下载。
+*本示例将启动Ubuntu服务，分别在Mac和Ubuntu服务下执行`uname -a`命令，查看当前机器(虚拟机)的内核、操作系统、CPU信息，比较二者的不同。*
 
-运行结果：
+**在Mac环境下**
 
-```
-➜  ~ docker run docker/whalesay cowsay boo
-Unable to find image 'docker/whalesay:latest' locally
-latest: Pulling from docker/whalesay
-
-e190868d63f8: Pull complete 
-...
-Digest: sha256:178598e51a26abbc958b8a2e48825c90bc22e641de3d31e18aaf55f3258ba93b
-Status: Downloaded newer image for docker/whalesay:latest
- _____ 
-< boo >
- ----- 
-    \
-     \
-      \     
-                    ##        .            
-              ## ## ##       ==            
-           ## ## ## ##      ===            
-       /""""""""""""""""___/ ===        
-  ~~~ {~~ ~~~~ ~~~ ~~~~ ~~ ~ /  ===- ~~~   
-       \______ o          __/            
-        \    \        __/             
-          \____\______/   
+* <font color='green'>执行：</font>
 
 ```
+uname -a
+```
 
-### 示例2：使用Docker运行RabbitMQ服务
+* <font color='green'>结果：</font>
 
 ```
-# 查找rabbitMQ镜像
+Darwin ***deMBP.lan 16.4.0 Darwin Kernel Version 16.4.0: Thu Dec 22 22:53:21 PST 2016; root:xnu-3789.41.3~3/RELEASE_X86_64 x86_64
+```
+
+**拉取ubuntu:14.04后在交互式终端验证结果**
+
+* <font color='green'>拉取ubiuntu:14.04镜像：</font>
+
+```
+docker pull ubuntu:14.04
+```
+
+* <font color='green'>启动容器，在交互式终端执行`uname -a`命令：</font>
+
+```
+docker run -it ubuntu:14.04 uname -a
+```
+
+* <font color='green'>输出结果：</font>
+
+```
+Linux 353b8a582143 4.9.4-moby #1 SMP Wed Jan 18 17:04:43 UTC 2017 x86_64 x86_64 x86_64 GNU/Linux
+```
+
+**从输出结果可看出二者所处的环境已经发生了变化。**
+
+解释下<font color='#43BC9F'>`docker run -it ubuntu:14.04 uname -a`</font>命令参数：
+><font color='red'>`-it`</font>:里面包含两个参数，<font color='red'>`-i`</font>指交互式操作(interaction)，<font color='red'>`-t`</font>指终端(terminal);
+><font color='red'>`ubuntu:14.04`</font>:指用`ubuntu:14.04`为基础启动容器；
+><font color='red'>`uname -a`</font>：放在镜像后面的语句是命令；
+
+*参考[获取镜像](https://yeasy.gitbooks.io/docker_practice/content/image/pull.html)*
+
+### 示例 - RabbitMQ
+
+* <font color='green'>查找rabbitMQ镜像：</font>
+
+```
 docker search rabbitmq
 ```
 
+* <font color='green'>下载rabbitMQ镜像(不带web管理插件的镜像)：</font>
+
 ```
-# 下载rabbitMQ镜像(不带web管理插件的镜像)
 docker pull rabbitmq
-# 下载rabbitMQ镜像(带web管理插件的镜像)
+```
+
+* <font color='green'>下载rabbitMQ镜像(带web管理插件的镜像)：</font>
+
+```
 docker pull rabbitmq:management
 ```
 
+* <font color='green'>查看下载的镜像：</font>
+
 ```
-# 查看下载的镜像
 docker images
 ```
 
+* <font color='green'>启动rabbitMQ镜像(不带web管理插件)：</font>
+
 ```
-# 启动rabbitMQ镜像(不带web管理插件)
 docker run -d --publish 5671:5671 rabbitmq
-# 启动rabbitMQ(带web管理插件)
+```
+
+* <font color='green'>启动rabbitMQ(带web管理插件)：</font>
+
+```
 docker run -d --publish 5671:5671 \
  --publish 5672:5672 --publish 4369:4369 --publish 25672:25672 --publish 15671:15671 --publish 15672:15672 \
 rabbitmq:management
@@ -141,34 +221,52 @@ PS：
 1883, 8883:if MQTT is enabled
 ```
 
-### 示例3：使用Docker运行MySql服务
+### 示例 - MySql
+
+* <font color='green'>下载镜像：</font>
 
 ```
-# 下载镜像
 docker pull mysql
 ```
 
+* <font color='green'>查看下载的镜像：</font>
+
 ```
-# 查看下载的镜像
 docker images
 ```
 
+* <font color='green'>运行MySql实例：</font>
+
 ```
-# 运行MySql实例
 docker run --name first-mysql -p 3306:3306 -e MYSQL\_ROOT\_PASSWORD=123456 -d mysql 
 ```
 
-此时，使用MySql客户端可以连接到MySql服务。
+(或指定数据库、用户名和密码:)
 
-## 使用Docker-compose定义、运行多个Docker容器
+```
+docker run \
+  --name=gitlab_mysql \
+  -tid \
+  -e 'DB_NAME=gitlabhq_production' \
+  -e 'DB_USER=gitlab' \
+  -e 'DB_PASS=password' \
+  -v /Users/tilkai/data/docker/gitlab/mysql:/var/lib/mysql \
+  sameersbn/mysql:latest
+```
 
-[利用docker搭建一个mysql + java service + nginx](http://www.jb51.net/article/96042.htm)
+* <font color='green'>此时，使用MySql客户端可以连接到MySql服务。</font>
+
+---
+
+## 使用Docker-Compose定义、运行多个Docker容器
+
+### Docker-Compose是什么
 
 >`Docker-compose`是容器编排工具，其使用`*.yml`文件作为配置文件，根据配置启动、停止、重启一组容器。
 
 参考自[Docker 产品全解析之 docker-compose](http://www.jianshu.com/p/15a809b7b068)
 
-### 如何安装Docker-compose
+### 如何安装Docker-compose(Mac下无需安装，可直接使用)
 
 > 安装Docker
 > 执行`$ curl -L "https://github.com/docker/compose/releases/download/1.10.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose`下载安装`docker-compose`
@@ -177,52 +275,66 @@ docker run --name first-mysql -p 3306:3306 -e MYSQL\_ROOT\_PASSWORD=123456 -d my
 
 参考自[Install Docker Compose](https://docs.docker.com/compose/install/)
 
-### docker-compose.yml配置文件
+### 通过搭建一个GitLab服务来学习Docker-Compose
 
-以下参考自[Docker Compose 配置文件详解](http://www.jianshu.com/p/2217cfed29d7)。
+参考：
+[sameersbn/docker-gitlab](https://github.com/sameersbn/docker-gitlab/blob/master/docker-compose.yml#L8)
+[sameersbn/gitlab](https://hub.docker.com/r/sameersbn/gitlab/)
 
-> 举个标准的配置文件的例子：
+docker-compose.yml配置文件：
 
 ```
 version: '2'
 services:
-  web:
-    image: dockercloud/hello-world
-    ports:
-      - 8080
-    networks:
-      - front-tier
-      - back-tier
-
   redis:
-    image: redis
-    links:
-      - web
-    networks:
-      - back-tier
-
-  lb:
-    image: dockercloud/haproxy
-    ports:
-      - 80:80
-    links:
-      - web
-    networks:
-      - front-tier
-      - back-tier
+    restart: always
+    image: sameersbn/redis:latest
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock 
+      - /Users/tilkai/data/docker/gitlab/redis:/var/lib/redis:Z
+  mysql:
+    restart: always
+    image: sameersbn/mysql
+    ports:
+      - "3307:3306"
+    environment:
+      - DB_NAME==gitlabhq_production
+      - DB_USER=gitlab
+      - DB_PASS=password
+    volumes:
+      - /Users/tilkai/data/docker/gitlab/mysql:/var/lib/mysql
+  gitlab:
+    restart: always
+    image: sameersbn/gitlab:8.11.7
+    container_name: gitlab
+    depends_on:
+      - mysql
+      - redis
+    ports:
+      - "8022:8022"
+      - "8043:8043"
+    environment:
+      - DEBUG=false
 
-networks:
-  front-tier:
-    driver: bridge
-  back-tier:
-    driver: bridge
+      - DB_TYPE=mysql
+      - DB_ADAPTER=mysql2
+      - DB_USER=gitlab
+      - DB_PASS=password
+      - DB_NAME=gitlabhq_production
+      - DB_HOST=mysql
+
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
 ```
 
-> 从上述配置文件可以看到，一个标准的`docker-compose.yml`配置文件中，应该包括`version`,`services`,`networks`三部分。
+### docker-Compose模版文件
 
-#### services部分的书写规则
+以下参考自：
+[Docker Compose 配置文件详解](http://www.jianshu.com/p/2217cfed29d7)。
+[Compose 模板文件](https://yeasy.gitbooks.io/docker_practice/content/compose/yaml_file.html)
+
+模板文件是使用 Compose 的核心，默认的模板文件名称为 docker-compose.yml，格式为 YAML 格式。
+
+#### 简单介绍部分docker-compose.yml中常见的指令。
 
 ##### image
 
@@ -275,9 +387,9 @@ build:
   dockerfile: path/of/Dockerfile
 ```
 
-**注意**，`build`标签指定的为`dockerfile`文件的目录，指定某个`dockerfile`文件需要在`build`下的`dockerfile`标签指定。
+**注意**，`build`标签指定的是`dockerfile`文件的所在目录，假如要指定某个`dockerfile`文件需要在`build`下的`dockerfile`标签指定。
 如果同时指定了`image`和`build`标签，那么compose会构建镜像，并把镜像命名为`image`标签后的名字。
-举个简单的例子，根据下面的`Dockerfile`文件构建名为`whalesay`，标签为`test`的镜像：
+举个简单的例子，根据下面的`Dockerfile`文件可构建名为`whalesay`，标签为`test`的镜像：
 
 ```
 #Dockerfile文件的内容
@@ -297,73 +409,6 @@ services:
     image: whalesay:test
 ```
 
-执行`docker-compose up`后，执行`docker images`命令查看镜像创建结果(如下)。
-
-```
-➜  DockerBuildTest docker-compose up
-Building whalesay
-Step 1/3 : FROM docker/whalesay:latest
- ---> 6b362a9f73eb
-Step 2/3 : RUN apt-get -y update && apt-get install -y fortunes
- ---> Using cache
- ---> fcc65b9434be
-Step 3/3 : CMD /usr/games/fortune -a | cowsay
- ---> Using cache
- ---> 4af7ae2d516b
-Successfully built 4af7ae2d516b
-WARNING: Image for service whalesay was built because it did not already exist. To rebuild this image you must use `docker-compose build` or `docker-compose up --build`.
-Creating dockerbuildtest_whalesay_1
-Attaching to dockerbuildtest_whalesay_1
-whalesay_1  |  ______________________________________
-whalesay_1  | / <Overfiend_> Intel. Bringing you the \
-whalesay_1  | | cutting-edge technology of 1979      |
-whalesay_1  | |                                      |
-whalesay_1  | \ for 22 years now.                    /
-whalesay_1  |  --------------------------------------
-whalesay_1  |     \
-whalesay_1  |      \
-whalesay_1  |       \
-whalesay_1  |                     ##        .
-whalesay_1  |               ## ## ##       ==
-whalesay_1  |            ## ## ## ##      ===
-whalesay_1  |        /""""""""""""""""___/ ===
-whalesay_1  |   ~~~ {~~ ~~~~ ~~~ ~~~~ ~~ ~ /  ===- ~~~
-whalesay_1  |        \______ o          __/
-whalesay_1  |         \    \        __/
-whalesay_1  |           \____\______/
-dockerbuildtest_whalesay_1 exited with code 0
-```
-
-```
-➜ DockerBuildTest docker images
-REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
-whalesay            test                4af7ae2d516b        4 weeks ago         275 MB
-```
-
-在`docker-compose.yml`中定义构建任务，可以使用`args`标签指定构建过程中的环境变量，但是在构建成功后取消。
-
-例如在`docker-compose.yml`中支持以下两种`args`标签的定义方式：
-
-```
-# 方式1
-build:
-  context: .
-  args:
-    buildno: 1
-    password: secret
-```
-
-```
-# 方式2
-build:
-  context:
-    args:
-      - buildno=1
-      - password=secret
-```
-
-**注意**：YAML 的布尔值（true, false, yes, no, on, off）必须要使用引号引起来（单引号、双引号均可），否则会当成字符串解析。
-
 ##### command
 
 使用 command 可以覆盖容器启动后默认执行的命令。
@@ -371,13 +416,7 @@ build:
 如：
 
 ```
-command: bundle exec thin -p 3000
-```
-
-或写成类似 Dockerfile 中的格式：
-
-```
-command: [bundle, exec, thin, -p, 3000]
+command: echo "hello,world!"
 ```
 
 ##### container_name
@@ -417,7 +456,7 @@ services:
 
 ##### dns
 
-和 --dns 参数一样用途，格式如下：
+自定义dns服务器，和 --dns 参数一样用途，格式如下：
 
 ```
 dns: 8.8.8.8
@@ -440,27 +479,6 @@ tmpfs: /run
 tmpfs:
   - /run
   - /tmp
-```
-
-##### entrypoint
-
-在 Dockerfile 中有一个指令叫做 ENTRYPOINT 指令，用于指定接入点，第四章有对比过与 CMD 的区别。
-在 docker-compose.yml 中可以定义接入点，覆盖 Dockerfile 中的定义：
-
-```
-entrypoint: /code/entrypoint.sh
-```
-
-格式和 Docker 类似，不过还可以写成这样
-
-```
-entrypoint:
-    - php
-    - -d
-    - zend_extension=/usr/local/lib/php/extensions/no-debug-non-zts-20100525/xdebug.so
-    - -d
-    - memory_limit=-1
-    - vendor/bin/phpunit
 ```
 
 ##### env_file
@@ -523,21 +541,6 @@ external_links:
  - project_db_1:postgresql
 ```
 
-##### labels
-
-向容器添加元数据，和Dockerfile的LABEL指令一个意思，格式如下：
-
-```
-labels:
-  com.example.description: "Accounting webapp"
-  com.example.department: "Finance"
-  com.example.label-with-empty-value: ""
-labels:
-  - "com.example.description=Accounting webapp"
-  - "com.example.department=Finance"
-  - "com.example.label-with-empty-value"
-```
-
 ##### links
 
 解决容器的链接顺序的问题：
@@ -547,25 +550,6 @@ links:
  - db
  - db:database
  - redis
-```
-
-##### logging
-
-用于配置日志服务。格式如下：
-
-```
-logging:
-  driver: syslog
-  options:
-    syslog-address: "tcp://192.168.0.42:123"
-```
-
-##### pid
-
-将PID模式设置为主机PID模式，跟主机系统共享进程命名空间。容器使用这个标签将能够访问和操纵其他容器和宿主机的名称空间。
-
-```
-pid: "host"
 ```
 
 ##### extra_hosts
@@ -589,16 +573,6 @@ ports:
  - "8000:8000"
  - "49100:22"
  - "127.0.0.1:8001:8001"
-```
-
-##### security_opt
-
-为每个容器覆盖默认的标签。简单说来就是管理全部服务的标签。比如设置全部服务的user标签值为USER:
-
-```
-security_opt:
-  - label:user:USER
-  - label:role:ROLE
 ```
 
 ##### stop_signal
@@ -651,36 +625,6 @@ volumes_from:
   - container:container_name:rw
 ```
 
-##### cap_add, cap_drop
-
-添加或删除容器的内核功能。
-
-```
-cap_add:
-  - ALL
-
-cap_drop:
-  - NET_ADMIN
-  - SYS_ADMIN
-```
-
-##### cgroup_parent
-
-指定一个容器的父级cgroup。
-
-```
-cgroup_parent: m-executor-abcd
-```
-
-##### devices
-
-设备映射列表。与Docker client的--device参数类似。
-
-```
-devices:
-  - "/dev/ttyUSB0:/dev/ttyUSB0"
-```
-
 ##### extends
 
 这个标签可以扩展另一个服务，扩展内容可以是来自在当前文件，也可以是来自其他文件，相同服务的情况下，后来者会有选择地覆盖原有配置。
@@ -692,20 +636,6 @@ extends:
 ```
   
 用户可以在任何地方使用这个标签，只要标签内容包含file和service两个值就可以了。file的值可以是相对或者绝对路径，如果不指定file的值，那么Compose会读取当前YML文件的信息。
-
-##### network_mode
-
-网络模式，与Docker client的--net参数类似，只是相对多了一个service:[service name] 的格式。
-
-```
-network_mode: "bridge"
-network_mode: "host"
-network_mode: "none"
-network_mode: "service:[service name]"
-network_mode: "container:[container name/id]"
-```
-
-可以指定使用服务或者容器的网络。
 
 ##### networks
 
@@ -735,25 +665,6 @@ services:
 ```
 
 相同的服务可以在不同的网络有不同的别名。
-
-### 最基础的 ExpressJS + MongoDB 组成的 web 应用
-
-```
-mongodb:  // 容器名
-  image: mongo:3.0.7  // 使用的镜像
-  volumes:
-    - ./mongodb/data/db:/data/db  // 挂载目录，宿主机目录:容器内目录
-  ports:
-    - 27017:27017  // 端口映射，宿主机端口:容器内端口
-  command: /bin/bash -c "mongod"  // 容器启动命令
-nodejs:
-  image: nodejs:5.1.0
-  volumes:
-    - ./nodejs/code:/code
-  ports:
-    - 3000:3000
-  command: /bin/bash -c "cd /code && npm install && npm start"
-```
 
 ## 构建自己的镜像
 
@@ -835,91 +746,6 @@ docker build -t docker-whale .
 
 执行成功后，会创建名为`docker-whale`的镜像，可通过`docker images`命令查看。
 
-完整的执行结果：
-
-```
-➜  DockerBuild docker build -t docker-whale .
-Sending build context to Docker daemon 2.048 kB
-Step 1 : FROM docker/whalesay:latest
- ---> 6b362a9f73eb
-Step 2 : RUN apt-get -y update && apt-get install -y fortunes
- ---> Running in 60c69de9cbd1
-Ign http://archive.ubuntu.com trusty InRelease
-Get:1 http://archive.ubuntu.com trusty-updates InRelease [65.9 kB]
-Get:2 http://archive.ubuntu.com trusty-security InRelease [65.9 kB]
-Hit http://archive.ubuntu.com trusty Release.gpg
-Hit http://archive.ubuntu.com trusty Release
-Get:3 http://archive.ubuntu.com trusty-updates/main Sources [480 kB]
-Get:4 http://archive.ubuntu.com trusty-updates/restricted Sources [5921 B]
-Get:5 http://archive.ubuntu.com trusty-updates/universe Sources [216 kB]
-Get:6 http://archive.ubuntu.com trusty-updates/main amd64 Packages [1172 kB]
-Get:7 http://archive.ubuntu.com trusty-updates/restricted amd64 Packages [20.4 kB]
-Get:8 http://archive.ubuntu.com trusty-updates/universe amd64 Packages [507 kB]
-Get:9 http://archive.ubuntu.com trusty-security/main Sources [157 kB]
-Get:10 http://archive.ubuntu.com trusty-security/restricted Sources [4621 B]
-Get:11 http://archive.ubuntu.com trusty-security/universe Sources [55.9 kB]
-Get:12 http://archive.ubuntu.com trusty-security/main amd64 Packages [711 kB]
-Get:13 http://archive.ubuntu.com trusty-security/restricted amd64 Packages [17.0 kB]
-Get:14 http://archive.ubuntu.com trusty-security/universe amd64 Packages [193 kB]
-Hit http://archive.ubuntu.com trusty/main Sources
-Hit http://archive.ubuntu.com trusty/restricted Sources
-Hit http://archive.ubuntu.com trusty/universe Sources
-Hit http://archive.ubuntu.com trusty/main amd64 Packages
-Hit http://archive.ubuntu.com trusty/restricted amd64 Packages
-Hit http://archive.ubuntu.com trusty/universe amd64 Packages
-Fetched 3671 kB in 23s (154 kB/s)
-Reading package lists...
-Reading package lists...
-Building dependency tree...
-Reading state information...
-The following extra packages will be installed:
-  fortune-mod fortunes-min librecode0
-Suggested packages:
-  x11-utils bsdmainutils
-The following NEW packages will be installed:
-  fortune-mod fortunes fortunes-min librecode0
-0 upgraded, 4 newly installed, 0 to remove and 92 not upgraded.
-Need to get 1961 kB of archives.
-After this operation, 4817 kB of additional disk space will be used.
-Get:1 http://archive.ubuntu.com/ubuntu/ trusty/main librecode0 amd64 3.6-21 [771 kB]
-Get:2 http://archive.ubuntu.com/ubuntu/ trusty/universe fortune-mod amd64 1:1.99.1-7 [39.5 kB]
-Get:3 http://archive.ubuntu.com/ubuntu/ trusty/universe fortunes-min all 1:1.99.1-7 [61.8 kB]
-Get:4 http://archive.ubuntu.com/ubuntu/ trusty/universe fortunes all 1:1.99.1-7 [1089 kB]
-debconf: unable to initialize frontend: Dialog
-debconf: (TERM is not set, so the dialog frontend is not usable.)
-debconf: falling back to frontend: Readline
-debconf: unable to initialize frontend: Readline
-debconf: (This frontend requires a controlling tty.)
-debconf: falling back to frontend: Teletype
-dpkg-preconfigure: unable to re-open stdin: 
-Fetched 1961 kB in 8s (225 kB/s)
-Selecting previously unselected package librecode0:amd64.
-(Reading database ... 13116 files and directories currently installed.)
-Preparing to unpack .../librecode0_3.6-21_amd64.deb ...
-Unpacking librecode0:amd64 (3.6-21) ...
-Selecting previously unselected package fortune-mod.
-Preparing to unpack .../fortune-mod_1%3a1.99.1-7_amd64.deb ...
-Unpacking fortune-mod (1:1.99.1-7) ...
-Selecting previously unselected package fortunes-min.
-Preparing to unpack .../fortunes-min_1%3a1.99.1-7_all.deb ...
-Unpacking fortunes-min (1:1.99.1-7) ...
-Selecting previously unselected package fortunes.
-Preparing to unpack .../fortunes_1%3a1.99.1-7_all.deb ...
-Unpacking fortunes (1:1.99.1-7) ...
-Setting up librecode0:amd64 (3.6-21) ...
-Setting up fortune-mod (1:1.99.1-7) ...
-Setting up fortunes-min (1:1.99.1-7) ...
-Setting up fortunes (1:1.99.1-7) ...
-Processing triggers for libc-bin (2.19-0ubuntu6.6) ...
- ---> fcc65b9434be
-Removing intermediate container 60c69de9cbd1
-Step 3 : CMD /usr/games/fortune -a | cowsay
- ---> Running in 02ceaeb0a6d3
- ---> 4af7ae2d516b
-Removing intermediate container 02ceaeb0a6d3
-Successfully built 4af7ae2d516b
-```
-
 使用`docker run docker-whale`命令看查看新建的镜像，会输出类似如下的结果：
 
 ```
@@ -945,15 +771,61 @@ Successfully built 4af7ae2d516b
 
 ### 构建过程剖析
 
-`docker build -t docker-whale .`命令会使用当前目录下的`Dockerfile`文件构建一个名为`docker-whale`的镜像。
+`docker build -t docker-whale .`命令会使用当前目录下的`Dockerfile`文件构建一个名为`docker-whale`的镜像(`build`表示构建，`-t`表示给构建的镜像起名字)。
+
+`docker build -t`命令涉及到`docker image`的命名规则：
+>* 完整命名：registry_url/namespace/image_name:image_version
+>* 
 
 构建过程首先会检查需要构建的内容(Sending build context to Docker daemon 2.048 kB)，之后会根据Dockerfile文件中的命令分步执行操作。所以出现了上面的输出结果。
 
-## 使用Docker搭建自己的Docker仓库
+### 简单介绍Dockerfile文件
+
+`Dockerfile`文件中包含了许多shell脚本，通过下面这个用于构建CentOS镜像的Dockerfile文件来了解部分常见构建语法：
+
+```
+#
+# MAINTAINER        Carson,C.J.Zeong <zcy@nicescale.com>
+# DOCKER-VERSION    1.6.2
+#
+# Dockerizing CentOS7: Dockerfile for building CentOS images
+#
+FROM       centos:centos7.1.1503
+MAINTAINER Carson,C.J.Zeong <zcy@nicescale.com>
+
+ENV TZ "Asia/Shanghai"
+ENV TERM xterm
+
+ADD aliyun-mirror.repo /etc/yum.repos.d/CentOS-Base.repo
+ADD aliyun-epel.repo /etc/yum.repos.d/epel.repo
+
+RUN yum install -y curl wget tar bzip2 unzip vim-enhanced passwd sudo yum-utils hostname net-tools rsync man && \
+    yum install -y gcc gcc-c++ git make automake cmake patch logrotate python-devel libpng-devel libjpeg-devel && \
+    yum install -y --enablerepo=epel pwgen python-pip && \
+    yum clean all
+
+RUN pip install supervisor
+ADD supervisord.conf /etc/supervisord.conf
+
+RUN mkdir -p /etc/supervisor.conf.d && \
+    mkdir -p /var/log/supervisor
+
+EXPOSE 22
+
+ENTRYPOINT ["/usr/bin/supervisord", "-n", "-c", "/etc/supervisord.conf"]
+```
+
+* `FROM`：指定父镜像；
+* `MAINTAINER`：指定维护者信息；
+* `ENV`：全名`environment`，指定环境，如`ENV TZ "Asia/Shanghai"`使用Linux下的TZ环境变量指定了时区为上海；
+* `ADD`：Dockerfile提供了两个指令用于文件拷贝，`ADD`、`COPY`，作用都是复制文件到Container中(关于`ADD`和`COPY`命令的区别，自行Google)；
+* `RUN`：跟shell命令；
+* `EXPOSE`：指定Host-Container的端口映射；
+* `ENTRYPOINT`：Container每次启动时要执行的命令；
 
 ## Docker Hub使用
 
-关于DockerHub中进行`pull``push``Tag`等操作后续补充！
+关于DockerHub中进行`pull` `push` `Tag`等操作后续补充！
 
 待补充和实践的内容还包括Docker中搭建MariaDB和Python环境的操作。
 
@@ -1042,5 +914,10 @@ docker-compose rm  // 出现删除确认提示，y: 确认删除，n: 取消删�
 
 * stop
 停止一个已经运行的容器，但不删除它。通过 docker-compose start 可以再次启动这些容器。
+
+
+几个参考链接：
+
+[利用docker搭建一个mysql + java service + nginx](http://www.jb51.net/article/96042.htm)
 
 
