@@ -111,6 +111,32 @@ sudo systemctl restart docker
 sudo pip install -U docker-compose
 ```
 
+注意，此处执行可能报如下错误：
+
+```
+Traceback (most recent call last):
+  File "/usr/bin/pip", line 11, in <module>
+    sys.exit(main())
+  File "/usr/lib/python2.7/dist-packages/pip/__init__.py", line 215, in main
+    locale.setlocale(locale.LC_ALL, '')
+  File "/usr/lib/python2.7/locale.py", line 581, in setlocale
+    return _setlocale(category, locale)
+locale.Error: unsupported locale setting
+```
+
+解决方法，执行下面这句话
+
+```
+export LC_ALL=C
+```
+
+一波三折，中间可能又报pip版本问题，问题描述如下
+
+```
+You are using pip version 8.1.1, however version 9.0.1 is available.
+You should consider upgrading via the 'pip install --upgrade pip' command.
+```
+
 * (补充)卸载Docker-Compose
 
 ```
@@ -177,7 +203,7 @@ docker start tomcat_ecopm
 * 创建docker-compose.yml文件，配置如下：
 
 ```
-version: '1'
+version: '2'
 services:
   tomcat:
     restart: always
