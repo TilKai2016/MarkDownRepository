@@ -1,0 +1,11 @@
+[Unit]
+Description=collect-server
+After=syslog.target network.target
+
+[Service]
+Type=simple
+ExecStart=/home/jieneng/Docker/hpvm-collect-server/collect-server/build/libs/wdog.sh
+ExecStop=/bin/kill -9 $MAINPID
+
+[Install]
+WantedBy=multi-user.target
