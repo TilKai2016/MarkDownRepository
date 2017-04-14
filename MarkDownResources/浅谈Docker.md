@@ -825,6 +825,16 @@ ENTRYPOINT ["/usr/bin/supervisord", "-n", "-c", "/etc/supervisord.conf"]
 
 ## Docker Hub使用
 
+### 本地配置docker登录
+
+```
+docker login hub.docker.com
+```
+
+命令执行后将提示您输入用户名，这将成为你的公共存储库的空间名称。如果你的名字可用，docker会提示您输入一个密码和你的邮箱。然后他会自动记录下。你现在可以提交和推送你的镜像到Docker Hub的你的存储库。
+
+注：你的身份验证凭证将被存储在你本地目录的.dockercfg文件中。
+
 关于DockerHub中进行`pull` `push` `Tag`等操作后续补充！
 
 待补充和实践的内容还包括Docker中搭建MariaDB和Python环境的操作。

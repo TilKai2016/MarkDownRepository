@@ -226,5 +226,59 @@ chmod +x docker-compose.yml
 docker-compose up
 ```
 
+## docker安装mysql
+
+## docker-compose内容
+
+docker-compose.yml文件内容:
+
+```
+version: '2.0'
+services:
+  mysql:
+    image: hub.solarule.cn/deploy/mysql:5
+    restart: always
+    container_name: mysql
+    volumes:
+      - ./conf.d:/etc/mysql/conf.d
+      - ./data:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=Tsingcon2017
+      - MYSQL_DATABASE=jieneng
+      - MYSQL_USER=jieneng
+      - MYSQL_PASSWORD=Tsingcon2017
+    ports:
+      - 3306:3306
+```
+
+注意：docker-compose.yml文件只在创建时执行一次，environment属性中设置多个database，会被最后设置的database覆盖。
+
+## 后续数据库脚本操作
+
+
+* 后期需要使用命令行进行执行数据库的操作需要先进入bash界面，
+
+执行：
+
+```
+docker exec -it mysql bash
+```
+
+* 查看数据库信息：
+
+```
+env
+```
+
+* 登录数据库：
+
+```
+mysql -uroot -pTsingcon2017
+```
+
+之后可执行数据库操作。
+
+* **注意：**不修改docker-compose.yml时如果需要完全重新建立数据库，需要删除映射出的data文件夹和conf.d文件夹。
+
 ## 使用Nginx实现多域名解析到同一阿里云服务器IP的需求
 
