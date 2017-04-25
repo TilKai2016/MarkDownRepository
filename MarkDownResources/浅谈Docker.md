@@ -930,4 +930,48 @@ docker-compose rm  // 出现删除确认提示，y: 确认删除，n: 取消删�
 
 [利用docker搭建一个mysql + java service + nginx](http://www.jb51.net/article/96042.htm)
 
+## 如何进入docker的bash(或shell)界面
+
+注：在Linux中，bash为后期安装的软件，而shell为自带的terminal界面，所以在很多情况下，使用bash命令可能提示找不到该命令，此时可以使用/bin/sh命令进入terminal界面。
+
+具体命令如下：
+
+```
+# 通用命令
+docker exec -it container_name bash
+# mysql部署执行后进入terminal界面
+docker exec -it mysql bash
+# tomcat部署执行后进入terminal界面
+docker exec -it tomcat /bin/sh
+```
+
+以使用`docker exec -it mysql bash`进入mysql所在容器terminal为例，可以执行如下操作，进行如同在正常linux中一样的操作：
+
+```
+# 查看当前容器的环境信息
+env
+# 登录数据库
+mysql -uroot -ppassword
+```
+
+## 如何使docker服务自动重启，开机自启动
+
+首先，开机自启动问题，需要设置docker为开机自启动。
+
+docker服务自动重启的设置：
+
+* docker run
+
+```
+docker run -d --restart=always container_name
+```
+
+* docker-compose
+
+```
+一级标签
+  二级标签
+    三级标签
+      restart: always
+```
 
