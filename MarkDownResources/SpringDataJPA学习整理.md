@@ -337,4 +337,23 @@ public class A {
 
 ### JPA实体继承后面详细补充，以上关于实体继承的整理可能存在认知错误！
 
+## SpringDataJpa常用表达式
+
+参考自：[jpa.query-methods.query-creation](http://docs.spring.io/spring-data/jpa/docs/2.0.0.M2/reference/html/#jpa.query-methods.query-creation)
+
+
+| Keyword | Sample | JPQL snippet |
+| --- | --- | --- |
+| And | findByLastnameAndFirstname | ... WHERE x.lastname = ?1 AND x.firstname = ?2  |
+| Or | findByLastnameOrFirstname | ... WHERE x.lastname = ?1 AND x.firstname = ?2 |
+| Is,Equals | findByFirstname, findByFirstnameIs, findByFirstnameEquals | WHERE x.firstname = ?1 |
+| Between | findByStartdateBetween | WHERE x.startdate BETWEEN ?1 AND ?2 |
+| LessThan | findByAgeLessThan | WHERE x.age < ?1 |
+| LessThanEqual | findByAgeLessThanEqual | WHERE x.age <= ?1 |
+| GreaterThan | findByAgeGreaterThan | WHERE x.age > ?1 |
+| GreaterThanEquals | findByageGreaterThanEquals | WHERE x.age >= ?1 |
+| After | findByStartdateAfter | ... WHERE x.startdate > ?1 |
+
+
+
 
