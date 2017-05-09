@@ -85,3 +85,29 @@ tar -xf sql.tar
 # 测试端口 如：telnet 10.9.0.2 3306
 telnet ip host
 ```
+
+## -r -f
+
+```
+-r 递归操作
+-f 强制操作
+```
+
+## who && whoami
+
+```
+# 显示在线登录用户
+who
+# 显示当前操作用户
+whoami
+
+```
+
+## 显示主机名
+
+```
+# 显示主机名
+hostname
+```
+
+
