@@ -110,4 +110,107 @@ whoami
 hostname
 ```
 
+## chown
+
+命令格式：
+
+```
+chown [选项]... [所有者]:[组]文件...
+```
+
+该命令用于改变文件的拥有者和群组。
+
+## Ubuntu16.04防火墙相关
+
+### ufw防火墙
+
+**参考1**:[UFW防火墙简单设置](http://wiki.ubuntu.org.cn/UFW%E9%98%B2%E7%81%AB%E5%A2%99%E7%AE%80%E5%8D%95%E8%AE%BE%E7%BD%AE)
+
+**参考2**:[如何在Ubuntu 16.04上使用UFW设置防火墙](https://www.howtoing.com/how-to-set-up-a-firewall-with-ufw-on-ubuntu-16-04/)
+
+* 安装ufw防火墙
+
+```
+ sudo apt-get install ufw
+```
+
+* 查看ufw防火墙状态
+
+```
+sudo ufw status
+sudo ufw status verbose
+```
+
+* 防火墙开启80端口
+
+```
+# 允许外部访问80端口
+sudo ufw allow 80
+```
+
+* 按实际规则删除某个防火墙规则
+
+```
+# 删除80端口规则(禁止外部访问80端口)
+sudo ufw delete allow 80
+```
+
+* 按规则编号后删除某个防火墙规则
+
+```
+# 按规则编号
+sudo ufw status numbered
+# 删除编号为2的规则
+sudo ufw delete 2
+```
+
+* 允许某个IP访问所有本机端口
+
+```
+sudo ufw allow from 192.168.1.1
+```
+
+* 允许某个IP访问特定端口
+
+```
+允许192.168.1.1访问22端口
+sudo ufw allow from 192.168.1.1 to any port 22
+```
+
+* 允许特定端口范围
+
+```
+# 允许6000-6007端口范围开放
+sudo ufw allow 6000:6007/tcp
+sudo ufw allow 6000:6007/udp
+```
+
+* 防火墙重启
+
+```
+sudo ufw reload
+```
+
+* 启用ufw
+
+```
+# 启用
+sudo ufw enable
+# 默认拒绝访问
+sudo ufw defult deny
+```
+
+* 关闭ufw
+
+```
+sudo ufw disable
+```
+
+* 拒绝某个ip的连接
+
+```
+# 拒绝来自192.168.1.1的所有连接
+sudo ufw deny from 192.168.1.1
+```
+
 

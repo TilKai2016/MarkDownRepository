@@ -77,6 +77,31 @@ To generate this message, Docker took the following steps:
 
 Mac下Docker的安装操作在网上有很多，比如参考[ 在OS X安装Docker](http://blog.csdn.net/jpiverson/article/details/50685817)。
 
+### linux下安装docker设置用户组等操作
+
+* 建立docker用户组
+
+建立docker组：
+
+```
+sudo groupadd docker
+```
+
+将当前用户加入docker组：
+
+```
+sudo usermod -aG docker $USER
+```
+
+**注意**，如果碰到使用上述命令不成功的情况，重启docker服务，退出ssh，重新远程登录再次进行尝试。
+假如尝试失败，查看失败提示信息，如果是因为`/home/${USER}/.docker`等原因，可以尝试使用以下命令将当前用户加入到docker组中：
+
+```
+sudo chown ${USER}:${USER} /home/${USER}/.docker -R
+sudo chmod g+rwx "/home/${USER}/.docker" -R
+```
+
+
 ## 关于Docker镜像、容器和仓库的概念
 
 ### Docker镜像
