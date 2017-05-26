@@ -226,4 +226,13 @@ ConnectionReader线程中读取inputStream，判断输入流字节数组是否�
 ConnectionReader根据输入流创建不可变的APDU实例(调用`final APDU aPDU = new APDU(is, setting)`构造方法，该构造方法中将通过对is的判断，指定该APDU实例的类型)，
 ConnectionReader根据不同的APDU实例类型，做不同的操作，之后调用`resetMaxIdleTimeTimer`，flush()出不同的ack；
 
+## 知识点
 
+* ServerSocket
+* InetAddress
+* ServerSocketFactory
+* DatagramSocket
+* ExecutorService
+* @SuppressWarnings
+* ScheduledExecutorService
+* Runtime

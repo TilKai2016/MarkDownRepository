@@ -59,4 +59,23 @@ git show <commit-hashId>
 git show <commit-hashId> filename
 ```
 
+## git跟踪相关
+
+
+### 从跟踪清单中删除文件(夹)
+
+```
+* 删除跟踪清单中dir文件夹下的a.class文件
+git rm --cache /dir/a.class
+# 删除跟踪清单中dir下所有文件
+git rm --cache /dir/\*
+```
+
+### git update-index --assume-unchanged
+
+```
+# 用来忽略指定文件的变动，在git status的时候不会检查这个文件是否变化，也就不会被提交。
+git update-index --assume-unchanged
+```
+
 
