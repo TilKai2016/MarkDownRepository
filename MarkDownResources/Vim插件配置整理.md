@@ -1,61 +1,89 @@
 # Vim插件配置整理
 
+## macOS安装Vim最新版
+
+参考:
+[所需即所获：像 IDE 一样使用 vim](https://github.com/yangyangwithgnu/use_vim_as_ide/blob/master/README.md)
+[macOS安装Vim8.0](http://www.jianshu.com/p/919b5e9057c1)
+
+* 下载最新vim
+
+```
+git clone git@github.com:vim/vim.git
+```
+
+* 加载配置，进入`git`clone下来的vim目录下，顺序执行下述命令：
+
+```
+./configure --with-features=huge --enable-pythoninterp=yes  --enable-cscope --enable-fontset --enable-perlinterp --enable-rubyinterp --with-python-config-dir=/usr/lib/python2.7/config --prefix=/usr/local
+make
+make install
+```
+
+为取代系统自带的7.x版本，需修改`.bash_profile(zsh是.zshrc)`，
+
+```
+vim ~/.bash_profile // 如果用的是zsh就是 vim ~/.zshrc
+```
+
+加入下面配置：
+
+```
+alias vim='/usr/local/bin/vim'
+```
+
+然后source一下让配置生效:
+
+```
+source ~/.bash_profile
+```
+
+此时执行`vim`，显示的是8.x版本，此时安装完成。
+
 ## 安装插件管理工具Vundle
 
 [Vunble](https://github.com/VundleVim/Vundle.vim)是vim的插件管理工具，它能够搜索、安装、更新和移除vim插件，再也不需要手动管理vim插件。
 
-<1>. Home/~目录新建(若没有).vim目录和.vimrc文件
+### .vim && .vimrc
+
+* Home/~目录新建(若没有).vim目录和.vimrc文件
 
 ```
 mkdir .vim
 touch .vimrc
 ```
 
-<2>. 安装Vunble 
+### 安装Vunble 
+
+* 下载VundleVim
 
 ```
-git clone https://github.com/gmarik/vundle.git ~/.vim/bundle/vundle
+git clone https://github.com/VundleVim/Vundle.vim.git ~/.vim/bundle/Vundle.vim
 ```
 
-<3>. 在.vimrc配置文件中添加vundle支持
+* 在`.vimrc`中添加相关配置信息
 
 ```
+" vundle 环境设置，添加对Vundle的支持
 filetype off
-set rtp+=~/.vim/bundle/vundle/
-call vundle#rc()
+set rtp+=~/.vim/bundle/Vundle.vim
+" vundle 管理的插件列表必须位于 vundle#begin() 和 vundle#end() 之间
+call vundle#begin()
+" 使用Plugin ''添加插件
+" 插件列表结束
+call vundle#end()
+filetype plugin indent on
 ```
 
-但实际上我是添加一个~/.vimrc.bundles文件来保存所有插件的配置，必须在~/.vimrc文件加入以下代码片段：
+* 添加完成后，在vim中执行`:PluginInstall`，开始自动安装。
+
+* 要卸载插件，先在 .vimrc 中注释或者删除对应插件配置信息，然后在 vim 中执行`:PluginClean`。
+
+* 插件更新频率较高，差不多每隔一个月你应该看看哪些插件有推出新版本，批量更新，只需执行`:PluginUpdate`。
+
 
 ```
-if filereadable(expand("~/.vimrc.bundles"))
-source ~/.vimrc.bundles
-endif
-```
-
-而~/.vimrc.bundles文件内容必须包含：
-
-```
-filetype off
-set rtp+=~/.vim/bundle/vundle/
-call vundle#rc()
-```
-
-复制[samlaudev/ConfigurationFiles](https://github.com/samlaudev/ConfigurationFiles/blob/master/vim/vimrc.bundles)的~/.vimrc.bundles的代码直接使用:
-
-```
-if &compatible
-  set nocompatible
-end
-
-filetype off
-set rtp+=~/.vim/bundle/vundle/
-call vundle#rc()
-
-" Let Vundle manage Vundle
-Bundle 'gmarik/vundle'
-
-" Define bundles via Github repos
+# 部分插件
 Bundle 'christoomey/vim-run-interactive'
 Bundle 'Valloric/YouCompleteMe'
 Bundle 'croaky/vim-colors-github'
@@ -91,17 +119,7 @@ Bundle "evanmiller/nginx-vim-syntax"
 Bundle "Lokaltog/vim-easymotion"
 Bundle "tomasr/molokai"
 Bundle "klen/python-mode"
-
-if filereadable(expand("~/.vimrc.bundles.local"))
-  source ~/.vimrc.bundles.local
-endif
-
-filetype on
 ```
-
-注意，本人使用时发现直接全部使用以上Bundle会报错，而且，很多插件并不适应个人使用，所以，建议研究一下各个插件干嘛用的，有针对性的添加。
-
-## 安装插件
 
 部分插件可参考[将你的Vim 打造成轻巧强大的IDE](http://www.open-open.com/lib/view/open1429884437588.html)
 
@@ -111,113 +129,23 @@ bundle分为三类，比较常用就是第二种：
 2. 在Github其他用户下的repos, 需要写出”用户名/repos名”
 3. 不在Github上的插件，需要写出git全路径
 
-将安装的插件在~/.vimrc配置，但是我是将插件配置信息放在~/.vimrc.bundles:
+### .vimrc配置文件中部分语法
 
 ```
-" Define bundles via Github repos
-Bundle 'christoomey/vim-run-interactive'
-Bundle 'Valloric/YouCompleteMe'
-Bundle 'croaky/vim-colors-github'
-Bundle 'danro/rename.vim'
-Bundle 'majutsushi/tagbar'
-Bundle 'kchmck/vim-coffee-script'
-Bundle 'kien/ctrlp.vim'
-Bundle 'pbrisbin/vim-mkdir'
-Bundle 'scrooloose/syntastic'
-Bundle 'slim-template/vim-slim'
-Bundle 'thoughtbot/vim-rspec'
-Bundle 'tpope/vim-bundler'
-Bundle 'tpope/vim-endwise'
-Bundle 'tpope/vim-fugitive'
-Bundle 'tpope/vim-rails'
-Bundle 'tpope/vim-surround'
-Bundle 'vim-ruby/vim-ruby'
-Bundle 'vim-scripts/ctags.vim'
-Bundle 'vim-scripts/matchit.zip'
-Bundle 'vim-scripts/tComment'
-Bundle "mattn/emmet-vim"
-Bundle "scrooloose/nerdtree"
-Bundle "Lokaltog/vim-powerline"
-Bundle "godlygeek/tabular"
-Bundle "msanders/snipmate.vim"
-Bundle "jelera/vim-javascript-syntax"
-Bundle "altercation/vim-colors-solarized"
-Bundle "othree/html5.vim"
-Bundle "xsbeats/vim-blade"
-Bundle "Raimondi/delimitMate"
-Bundle "groenewege/vim-less"
-Bundle "evanmiller/nginx-vim-syntax"
-Bundle "Lokaltog/vim-easymotion"
-Bundle "tomasr/molokai"
-Bundle "klen/python-mode"
+See :help internal-variables
+
+It lists the following types:
+
+                (nothing) In a function: local to a function; otherwise: global 
+buffer-variable    b:     Local to the current buffer.                          
+window-variable    w:     Local to the current window.                          
+tabpage-variable   t:     Local to the current tab page.                        
+global-variable    g:     Global.                                               
+local-variable     l:     Local to a function.                                  
+script-variable    s:     Local to a :source'ed Vim script.                     
+function-argument  a:     Function argument (only inside a function).           
+vim-variable       v:     Global, predefined by Vim.
 ```
-
-现在打开vim，运行`:BundleInstall`或在shell中直接运行`vim +BundleInstall +qall`完成插件安装。
-
-注意，安装过程中尽量避免对该窗口操作，如全屏切换，鼠标滚轮滚动等，都应该尽量避免，否则可能会导致错误。
-
-### 装完后可能会有版本过低的提示
-
-下面解决版本过低问题，以及中间可能出现的错误
-
-<1>. 报如下错误:
-
-```
-vim +BundleInstall +qall
-YouCompleteMe unavailable: requires Vim 7.4.143+
-Press ENTER or type command to continue
-```
-
-这是因为vim版本过低，更新Vim版本:
-
-```
-brew install macvim --with-override-system-vim
-```
-
-之后运行下面命令，连接到/Application:
-
-```
-brew linkapps macvim
-```
-
-最后在.zshrc配置文件中使用别名来使用更新后的vim:
-
-```
-#setup macvim alias
-alias vim='/usr/local/opt/macvim/MacVim.app/Contents/MacOS/Vim'
-```
-
-<2>. 在执行<1>中`brew install macvim --override-system-vim`命令的过程中，假如有以下提示出现:
-
-```
-xcode-select: error: tool 'xcodebuild' requires Xcode, but active developer directory '/Library/Developer/CommandLineTools' is a command line tools instance
-```
-
-说明Xcode路径错误。
-
-解决办法，执行下面的代码，切换到你正在用的Xcode安装路径下:
-
-```
-sudo xcode-select --switch /Applications/Xcode.app/Contents/Developer/
-```
-
-再次执行`brew install macvim --with-override-system-vim`以及之后的步骤。
-
-### 以上都成功后使用vim打开文件可能会显示下面提示
-
-错误提示:
-
-```
-YouCompleteMe unavailable no module named future
-```
-
-进入`.vim/bundle/YouCompleteMe`路径，执行:
-
-```
-git submodule update --init --recursive
-```
-
-修复成功。
 
 ### 配置NERD Tree快捷键
 

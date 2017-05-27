@@ -4,39 +4,49 @@
 
 ### 什么是Docker?
 
-Docker是一个开源平台，包括Docker引擎和DockerHub注册服务器。
->* **Docker容器引擎**：该引擎可以让开发者打包他们的应用和依赖包到一个可移植的容器中，然后将其发布到任何流行的Linux机器上。
->* **Docker Hub注册服务器**：用户可以在该服务器上创建自己的镜像库来存储、管理和分享镜像。利用Docker，可以实现软件的一次配置、处处运行。
+Docker : 一个`开源平台`，包括`Docker引擎`和`DockerHub注册服务器`。
 
-一般称Docker为“应用程序执行容器”或“软件工业上的集装箱技术”。
+>* **Docker容器引擎**：该引擎可以让开发者打包他们的应用和依赖包到一个可移植的容器中，然后将其发布到任何流行的Linux机器上。
+>* **DockerHub注册服务器**：用户可以在该服务器上创建自己的镜像库来存储、管理和分享镜像。利用Docker，可以实现软件的一次配置、处处运行。
+
+一般称Docker为`应用程序执行容器`或`软件工业上的集装箱技术`。
 
 <!-- more -->
 
 ### Docker解决了什么问题?
 
-用比较多的专业名词来描述-Docker产生的目的就是为了解决以下问题:
->* **环境管理复杂**: 从各种OS到各种中间件再到各种App，一款产品能够成功发布，作为开发者需要关心的东西太多，且难于管理，这个问题在软件行业中普遍存在并需要直接面对。Docker可以简化部署多种应用实例工作，比如Web应用、后台应用、数据库应用、大数据应用比如Hadoop集群、消息队列等等都可以打包成一个Image部署。
+Docker的出现是为了解决以下问题:
+>* **环境管理复杂:** 
+>从各种OS到各种中间件再到各种App，一款产品能够成功发布，作为开发者需要关心的东西太多，且难于管理，这个问题在软件行业中普遍存在并需要直接面对。Docker可以简化部署多种应用实例工作，比如Web应用、后台应用、数据库应用、大数据应用，比如Hadoop集群、消息队列等等都可以打包成一个Image部署。
 >
->* **云计算时代的到来**: 亚马逊云服务(AWS)的成功, 引导开发者将应用转移到云上, 解决了硬件管理的问题，然而软件配置和管理相关的问题依然存在 (AWS cloudformation是这个方向的业界标准, 样例模板可[参考这里](https://s3-us-west-2.amazonaws.com/cloudformation-templates-us-west-2/LAMP_Single_Instance.template))。Docker的出现正好能帮助软件开发者开阔思路，尝试新的软件管理方法来解决这个问题。
+>* **云计算时代的到来:**
+>亚马逊云服务(AWS)的成功, 引导开发者将应用转移到云上, 解决了硬件管理的问题，然而软件配置和管理相关的问题依然存在 (AWS cloudformation是这个方向的业界标准, 样例模板可[参考这里](https://s3-us-west-2.amazonaws.com/cloudformation-templates-us-west-2/LAMP_Single_Instance.template))。Docker的出现正好能帮助软件开发者开阔思路，尝试新的软件管理方法来解决这个问题。
 >
->* **虚拟化手段的变化**: 云时代采用标配硬件来降低成本，采用虚拟化手段来满足用户按需分配的资源需求以及保证可用性和隔离性。然而无论是KVM(kernel-based virtual machine)还是Xen(虚拟机监视器)，在 Docker 看来都在浪费资源，因为用户需要的是高效运行环境而非OS, GuestOS既浪费资源又难于管理, 更加轻量级的LXC(Linux Containers)更加灵活和快速。
+>* **虚拟化手段的变化:**
+>云时代采用标配硬件来降低成本，采用虚拟化手段来满足用户按需分配的资源需求以及保证可用性和隔离性。然而无论是KVM(kernel-based virtual machine)还是Xen(虚拟机监视器)，在Docker看来都在浪费资源，因为用户需要的是高效运行环境而非OS, GuestOS既浪费资源又难于管理, 更加轻量级的LXC(Linux Containers)更加灵活和快速。
 >
->* **LXC的便携性**: LXC在 Linux 2.6 的 Kernel 里就已经存在了，但是其设计之初并非为云计算考虑的，缺少标准化的描述手段和容器的可便携性，决定其构建出的环境难于分发和标准化管理(相对于KVM之类image和snapshot的概念)。Docker就在这个问题上做出了实质性的创新方法。
+>* **LXC的便携性:**
+>LXC在 Linux 2.6 的 Kernel 里就已经存在了，但是其设计之初并非为云计算考虑的，缺少标准化的描述手段和容器的可便携性，决定其构建出的环境难于分发和标准化管理(相对于KVM之类image和snapshot的概念)。Docker就在这个问题上做出了实质性的创新方法。
 
 通俗来讲-Docker的出现，解决了如下问题：
->* **更高效的利用系统资源**: 由于容器不需要进行硬件虚拟以及运行完整操作系统等额外开销，Docker 对系统资源的利用率更高。无论是应用执行速度、内存损耗或者文件存储速度，都要比传统虚拟机技术更高效。因此，相比虚拟机技术，一个相同配置的主机，往往可以运行更多数量的应用。
+>* **更高效的利用系统资源:**
+>由于容器不需要进行硬件虚拟以及运行完整操作系统等额外开销，Docker对系统资源的利用率更高。无论是应用执行速度、内存损耗或者文件存储速度，都要比传统虚拟机技术更高效。因此，相比虚拟机技术，一个相同配置的主机，往往可以运行更多数量的应用。
 >
->* **更快速的启动时间**: 传统的虚拟机技术启动应用服务往往需要数分钟，而 Docker 容器应用，由于直接运行于宿主内核，无需启动完整的操作系统，因此可以做到秒级、甚至毫秒级的启动时间。大大的节约了开发、测试、部署的时间。
+>* **更快速的启动时间:**
+>传统的虚拟机技术启动应用服务往往需要数分钟，而Docker容器应用，由于直接运行于宿主内核，无需启动完整的操作系统，因此可以做到秒级、甚至毫秒级的启动时间。大大的节约了开发、测试、部署的时间。
 >
->* **一致的运行环境**: 开发过程中一个常见的问题是环境一致性问题。由于开发环境、测试环境、生产环境不一致，导致有些 bug 并未在开发过程中被发现。而 Docker 的镜像提供了除内核外完整的运行时环境，确保了应用运行环境一致性，从而不会再出现 “这段代码在我机器上没问题啊” 这类问题。
+>* **一致的运行环境:**
+>开发过程中一个常见的问题是环境一致性问题。由于开发环境、测试环境、生产环境不一致，导致有些 bug 并未在开发过程中被发现。而 Docker 的镜像提供了除内核外完整的运行时环境，确保了应用运行环境一致性，从而不会再出现 “这段代码在我机器上没问题啊” 这类问题。
 >
->* **持续交付和部署**: 对开发和运维（[DevOps](https://zh.wikipedia.org/wiki/DevOps)）人员来说，最希望的就是一次创建或配置，可以在任意地方正常运行。
+>* **持续交付和部署:**
+>对开发和运维（[DevOps](https://zh.wikipedia.org/wiki/DevOps)）人员来说，最希望的就是一次创建或配置，可以在任意地方正常运行。
 >使用 Docker 可以通过定制应用镜像来实现持续集成、持续交付、部署。开发人员可以通过 [Dockerfile](https://docs.docker.com/engine/reference/builder/) 来进行镜像构建，并结合 持续集成(Continuous Integration) 系统进行集成测试，而运维人员则可以直接在生产环境中快速部署该镜像，甚至结合 持续部署(Continuous Delivery/Deployment) 系统进行自动部署。
 >而且使用 Dockerfile 使镜像构建透明化，不仅仅开发团队可以理解应用运行环境，也方便运维团队理解应用运行所需条件，帮助更好的生产环境中部署该镜像。
 >
 >* **更轻松的迁移**: 由于 Docker 确保了执行环境的一致性，使得应用的迁移更加容易。Docker 可以在很多平台上运行，无论是物理机、虚拟机、公有云、私有云，甚至是笔记本，其运行结果是一致的。因此用户可以很轻易的将在一个平台上运行的应用，迁移到另一个平台上，而不用担心运行环境的变化导致应用无法正常运行的情况。
 >
->* **更轻松的维护和扩展**: Docker 使用的分层存储以及镜像的技术，使得应用重复部分的复用更为容易，也使得应用的维护更新更加简单，基于基础镜像进一步扩展镜像也变得非常简单。此外，Docker 团队同各个开源项目团队一起维护了一大批高质量的[官方镜像](https://hub.docker.com/explore/)，既可以直接在生产环境使用，又可以作为基础进一步定制，大大的降低了应用服务的镜像制作成本。
+>* **更轻松的维护和扩展:**
+>Docker 使用的分层存储以及镜像的技术，使得应用重复部分的复用更为容易，也使得应用的维护更新更加简单，基于基础镜像进一步扩展镜像也变得非常简单。此外，Docker 团队同各个开源项目团队一起维护了一大批高质量的[官方镜像](https://hub.docker.com/explore/)，既可以直接在生产环境使用，又可以作为基础进一步定制，大大的降低了应用服务的镜像制作成本。
 >
 >* 对比传统虚拟机总结:
 
@@ -59,10 +69,16 @@ Docker为C/S架构，由以下几部分组成：
 
 ### Mac下搭建Docker环境
 
-1. 使用homebrew执行`brew cask install docker`安装(**推荐**)
-或访问[docker官网](https://www.docker.com/products/docker-toolbox)下载安装文件，按照默认选项安装。
+#### 安装方法
+* 使用`homebrew`安装docker(**<font color=red>推荐</font>**)
 
-2. 运行`docker run hello-world`测试`docker`是否能够正常运行，正常的返回结果：
+```
+brew cask install docker
+```
+
+* 或访问[docker官网](https://www.docker.com/products/docker-toolbox)下载安装文件，按照默认选项安装。
+
+* 运行`docker run hello-world`测试`docker`是否能够正常运行，正常的返回结果：
 
 ```
 ➜  ~ docker run hello-world
@@ -78,6 +94,64 @@ To generate this message, Docker took the following steps:
 Mac下Docker的安装操作在网上有很多，比如参考[ 在OS X安装Docker](http://blog.csdn.net/jpiverson/article/details/50685817)。
 
 ### linux下安装docker设置用户组等操作
+
+#### CentOS与Ubuntu的docker安装方法
+
+##### Centos7搭建Docker环境
+
+* 安装Docker
+
+```
+sudo yum install docker
+```
+
+* 安装pip(如果没有安装pip)
+
+
+```
+# 安装epel yum源，该命令可以自动安装不同版本的epel，如CentOS6下执行安装的是epel6，CentOS7下执行时安装的是epel7
+sudo yum -y install epel-release
+
+# 安装python-pip
+sudo yum install python-pip
+
+# 升级pip
+sudo pip install --upgrade pip
+```
+
+* 安装Docker-compose
+
+```
+sudo pip install -U docker-compose
+```
+
+或参考[Gitbook-CentOS安装Docker](https://yeasy.gitbooks.io/docker_practice/content/install/centos.html)
+
+##### Ubuntu安装Docker
+
+*参考[Ubuntu、Debian 系列安装 Docker](https://yeasy.gitbooks.io/docker_practice/content/install/ubuntu.html)*
+
+* 使用如下脚本自动安装
+
+> 官方软件源：
+
+```
+curl -sSL https://get.docker.com/ | sh
+```
+
+> 阿里软件源：
+
+```
+curl -sSL http://acs-public-mirror.oss-cn-hangzhou.aliyuncs.com/docker-engine/internet | sh -
+```
+
+> DaoCloud软件源：
+
+```
+curl -sSL https://get.daocloud.io/docker | sh
+```
+
+#### 用户组操作
 
 * 建立docker用户组
 
