@@ -1,3 +1,90 @@
+# 常用Linux命令整理
+
+## cd命令
+
+* 跳转到进入此目录之前所在的目录：
+
+```
+cd -
+```
+
+## pwd
+
+* 当目录为链接时，输出实际路径，而非链接路径
+
+```
+pwd -P
+```
+
+## mkdir 
+
+* 递归创建目录
+
+```
+mkdir -p dir1/dir2/dir3
+```
+
+* 创建目录权限为777的目录
+
+```
+mkdir -m 777 dir1
+```
+
+* 创建目录并显示创建信息
+
+```
+mkdir -v dir1
+```
+
+* 使用一个命令创建项目的目录结构
+
+```
+mkdir -vp scf/{lib/,bin/,doc/{info,product},logs/{info,product},service/deploy/{info,product}}
+```
+
+## rm命令
+
+### 命令参数
+
+```
+# 强制删除，忽略不存在的文件，从不给出提示
+-f --force
+# 递归执行删除操作 
+-r --recursive
+# 交互式删除
+-i --interactive
+# 详细显示进行的步骤
+-v --verbose
+```
+
+# rmdir命令
+
+用于删除文件夹，但不能删除非空目录
+
+```
+rmdir dir1
+```
+
+* 如果删除某个目录的子目录后使得该目录变成空目录，则一并将该目录删除
+rmdir -p dir1/dir2
+
+## mv命令
+
+```
+mv sourceFile/Directory targetFile/Directory
+```
+
+* 命令参数
+
+```
+# 如果需要覆盖文件，则覆盖前先行备份
+-b
+# force 强制
+-f 
+# 如果目标资源已经存在，提示是否覆盖
+-i
+```
+
 ## 时间命令
 
 ```
@@ -7,7 +94,15 @@ date
 date -R
 ```
 
-## 查看当前用户
+## 查看用户
+
+* 查看当前用户
+
+```
+whoami
+```
+
+* 查看目前登入系统的用户信息
 
 ```
 who

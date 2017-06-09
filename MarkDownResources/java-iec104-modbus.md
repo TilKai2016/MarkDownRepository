@@ -236,3 +236,20 @@ ConnectionReader根据不同的APDU实例类型，做不同的操作，之后调
 * @SuppressWarnings
 * ScheduledExecutorService
 * Runtime
+
+## ASdu
+
+`ASdu`包括以下内容：
+
+* 1byte的typeId
+* 1byte的variable structure qualfier
+* 1or2byte的case of transmission
+* 1or2byte的common address of asdu
+* a list of information objects
+
+## ClientConnectionBuilder
+
+* 一个客户端应用程序想要连接到104服务，必须先创建一个`ClientConnectionBuilder`的实例。设置所有必须的配置参数。最终调用`connect`方法连接到104服务。
+* 一个`ClientConnectionBuilder`实例可以创建无限多个连接。
+* 修改`ClientConnectionBuilder`对于已经创建的连接没有影响。
+* 对于网络中的所有的通信节点，COT、CA、IOA的字段长度必须相同。 
