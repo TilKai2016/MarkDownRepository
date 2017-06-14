@@ -5,9 +5,9 @@
 <font color = "#00BC6E">docker-compose.yml</font>文件内容:
 
 ```
-version: '2.0'</p>
+version: '2.0'
 
-<p>services:
+services:
   db_mysql:
     restart: always
     image: mysql:latest
@@ -16,19 +16,21 @@ version: '2.0'</p>
       - ./data:/var/lib/mysql
       - ./mysql:/etc/mysql
     environment:
-      - MYSQL_ROOT_PASSWORD=password
+      - MYSQL_ROOT_PASSWORD=yourRootPassword
       - MYSQL_DATABASE=yourDatabaseName
-      - MYSQL_USER=YourUsername
-      - MYSQL_PASSWORD=Yaopassword
+      - MYSQL_USER=yourUsername
+      - MYSQL_PASSWORD=yourPassword
     ports:
-      - 3306:3306</p>
-
-<p>wordpress:
+      - 3306:3306
+    
+  wordpress:
     restart: always
     container_name: wordpress
     image: wordpress:latest
     depends_on:
       - db_mysql
+    volumes:
+      - ./html:/var/www/html
     environment:
       WORDPRESS_DB_HOST: db_mysql:3306
       WORDPRESS_DB_USER: YaoWordPressUsername
