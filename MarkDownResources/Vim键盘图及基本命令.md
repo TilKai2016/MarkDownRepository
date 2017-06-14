@@ -1,14 +1,6 @@
----
-title: Vi(Vim)键盘图及其基本命令
-date: 2016-12-21 18:02:46
-tags: [Vim, Vi]
----
-
 ## VIM键盘图
 
 ![Vim键盘图](http://ohx3k2vj3.bkt.clouddn.com/Vim%E9%94%AE%E7%9B%98%E5%9B%BE.jpg)
-
-<!-- more -->
 
 ## Vim的几种工作模式定义
 
@@ -399,6 +391,12 @@ tags: [Vim, Vi]
 * <font color = "green">`J`</font> -> <font color = "green">`拼接当前行和下一行`</font>
 
 * <font color = "green">`gJ`</font> -> <font color = "green">`拼接当前行和下一行，合并后不留空格`</font>
+
+## 小技巧
+
+粘贴代码时不使用自动缩进：
+
+粘贴之前输入 `:set paste` 粘贴完后恢复 `:set nopaste`
 
 ## 参考资料
 > **[Vi(Vim)键盘图及其基本命令](http://www.linuxidc.com/Linux/2015-07/119992.htm)**

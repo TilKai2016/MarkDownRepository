@@ -1,5 +1,3 @@
-# log4j.properties配置信息
-
 ## log4j简单了解
 
 参考[Java Logger(java日志)](http://blog.csdn.net/carefree31441/article/details/4678914)

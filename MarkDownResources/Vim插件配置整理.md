@@ -1,5 +1,3 @@
-# Vim插件配置整理
-
 ## macOS安装Vim最新版
 
 参考:
@@ -12,7 +10,7 @@
 git clone git@github.com:vim/vim.git
 ```
 
-* 加载配置，进入`git`clone下来的vim目录下，顺序执行下述命令：
+* 加载配置，进入`git clone`下来的vim目录下，顺序执行下述命令：
 
 ```
 ./configure --with-features=huge --enable-pythoninterp=yes  --enable-cscope --enable-fontset --enable-perlinterp --enable-rubyinterp --with-python-config-dir=/usr/lib/python2.7/config --prefix=/usr/local

@@ -1,4 +1,15 @@
-# 常用Linux命令整理
+## ls命令
+
+命令格式:
+
+```
+ls [选项] [目录名]
+```
+
+常用参数
+> * -a 列出当前目录包含.开头的隐藏文件的所有文件
+> * -A 同-a, 但不包含.和..目录
+> * -h 以K, M, G等单位显示文件大小, 如: `ls -alh`
 
 ## cd命令
 
@@ -16,7 +27,7 @@ cd -
 pwd -P
 ```
 
-## mkdir 
+## mkdir
 
 * 递归创建目录
 
@@ -49,7 +60,7 @@ mkdir -vp scf/{lib/,bin/,doc/{info,product},logs/{info,product},service/deploy/{
 ```
 # 强制删除，忽略不存在的文件，从不给出提示
 -f --force
-# 递归执行删除操作 
+# 递归执行删除操作
 -r --recursive
 # 交互式删除
 -i --interactive
@@ -80,7 +91,7 @@ mv sourceFile/Directory targetFile/Directory
 # 如果需要覆盖文件，则覆盖前先行备份
 -b
 # force 强制
--f 
+-f
 # 如果目标资源已经存在，提示是否覆盖
 -i
 ```
@@ -115,6 +126,57 @@ who
 ps -aux | grep ssh
 # 查看某个线程连接
 ps -ef | grep collect
+```
+
+## 查看端口占用
+
+### netstat命令
+
+netstat命令用于展示网络信息，常用参数如下：
+
+> * -a(all) 显示所有选项，默认不现实LISTEN相关，如列出所有端口:`netstat -a`
+> * -t(tcp) 仅展示tcp相关选项，如列出所有tcp端口:`netstat -at`
+> * -u(udp) 仅展示udp相关选项，如列出所有udp端口:`netstat -au`
+> * -n 拒绝显示别名，能显示数字的全部转化为数字
+> * -l 仅列出有在Listen的服务状态，如列出所有处于监听状态的端口:`netstat -l`
+> * -p 显示建立相关链接的程序名
+> * -r 显示路由信息，路由表
+> * -e 显示扩展信息，如uid等
+> * -s 按各个协议进行统计
+> * -c 每隔固定时间，执行该netstat命令，如每隔一秒执行一次该netstat:`netstat -c`
+
+```
+netstat -an | grep port
+```
+
+### lsof命令
+
+lsof：list open files 用于列出当前系统打开文件的工具。
+
+格式：
+
+```
+lsof [参数][文件]
+```
+
+常用参数：
+
+> * -a 列出打开文件存在的进程
+> * -c<进程名> 列出指定进程所打开的文件
+> * -g  列出GID号进程详情
+> * -d<文件号> 列出占用该文件号的进程
+> * +d<目录>  列出目录下被打开的文件
+> * +D<目录>  递归列出目录下被打开的文件
+> * -n<目录>  列出使用NFS的文件
+> * -i<条件>  列出符合条件的进程。（4、6、协议、:端口、 @ip ）
+> * -p<进程号> 列出指定进程号所打开的文件
+> * -u  列出UID号进程详情
+> * -h 显示帮助信息
+> * -v 显示版本信息
+
+```
+lsof -i
+lsof -i:port
 ```
 
 ## 端口转发
@@ -308,4 +370,28 @@ sudo ufw disable
 sudo ufw deny from 192.168.1.1
 ```
 
+## docker中apt-get命令
+
+以下安装命令执行前先执行`apt-get`更新:
+
+```
+apt-get update
+```
+
+* 安装`ping`和`ifconfig`:
+
+```
+# 安装ping
+apt-get install inetutils-ping
+# 安装ifconfig
+apt-get install net-tools
+# Dockerfile中安装ifconfig
+apt-get install -y net-tools
+```
+
+* 安装`vim`:
+
+```
+apt-get install vim
+```
 

@@ -1,11 +1,5 @@
----
-title: EcoPM_APP常用修改以及ipa企业包发布流程
-date: 2016-12-31 01:25:24
-tags: [IOS]
----
-
 ## 经常修改的代码位置整理
-<!-- more -->
+
 ### 服务器连接
 
 `Externals-Utility-Define.h`中修改：

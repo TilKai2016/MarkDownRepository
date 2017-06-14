@@ -1,5 +1,3 @@
-# 常用Git命令
-
 ## Git查看某次历史提交修改的内容
 
 ```
@@ -78,4 +76,23 @@ git rm --cache /dir/\*
 git update-index --assume-unchanged
 ```
 
+## git status乱码
+
+执行:
+
+```
+git config --global core.quotepath false
+```
+
+执行前:
+
+```
+deleted:    "Hexo\346\220\255\345\273\272Blog.md"
+```
+
+执行后:
+
+```
+deleted:    Hexo搭建Blog.md
+```
 

@@ -1,17 +1,3 @@
----
-title: Hexo搭建Blog
-date: 2016-12-22 10:06:06
-tags: [Hexo, Blog]
----
-
-# Hexo搭建博客
-<!-- more -->
-参考:[Charly Cheng](http://www.charlycheng.xyz/);
-**附带具体步骤:**
-<1>. [搭建博客第一步：Hexo](http://www.charlycheng.xyz/2016/12/03/hello-world/)
-<2>. [搭建博客第二步：GithubPages](http://www.charlycheng.xyz/2016/12/05/%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2%E7%AC%AC%E4%B8%80%E6%AD%A5%EF%BC%9AGithubPages/)
-<3>. [搭建博客第三步：域名购买及配置](http://www.charlycheng.xyz/2016/12/05/%E6%90%AD%E5%BB%BA%E5%8D%9A%E5%AE%A2%E7%AC%AC%E4%B8%89%E6%AD%A5%EF%BC%9A%E5%9F%9F%E5%90%8D%E8%B4%AD%E4%B9%B0%E5%8F%8A%E9%85%8D%E7%BD%AE/)
-<4>. [搭建博客最终篇：博客的成功搭建](http://www.charlycheng.xyz/2016/12/05/%E6%90%AD%E5%BB%BA%E5%8D%9A%E5%AE%A2%E6%9C%80%E7%BB%88%E7%AF%87%EF%BC%9A%E5%8D%9A%E5%AE%A2%E7%9A%84%E6%88%90%E5%8A%9F%E6%90%AD%E5%BB%BA/)
 ## Hexo使用
 <1>. 新建文件夹，执行`npm install hexo-cli -g`,安装Hexo;
 <2>. 执行`hexo init blog`,下载blog模板;
@@ -49,8 +35,16 @@ deploy:
 
 ## 域名解析
 <1>. 登录[万网首页](https://wanwang.aliyun.com/),首先购买域名;
-<2>. 已购买域名后,进行域名解析,记录值为[192.30.252.153](192.30.252.153)
-解析成功后即可通过域名访问blog了。
+<2>. 已购买域名后,进行域名解析,记录值为:`192.30.252.153`解析成功后即可通过域名访问blog了。
 
 ## 干货:搭建使用 Hexo 的些许经验!
 [搭建使用 Hexo 的些许经验](http://www.jianshu.com/p/728041d6e741)
+
+参考:[Charly Cheng](http://www.charlycheng.xyz/);
+**附带具体步骤:**
+<1>. [搭建博客第一步：Hexo](http://www.charlycheng.xyz/2016/12/03/hello-world/)
+<2>. [搭建博客第二步：GithubPages](http://www.charlycheng.xyz/2016/12/05/%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2%E7%AC%AC%E4%B8%80%E6%AD%A5%EF%BC%9AGithubPages/)
+<3>. [搭建博客第三步：域名购买及配置](http://www.charlycheng.xyz/2016/12/05/%E6%90%AD%E5%BB%BA%E5%8D%9A%E5%AE%A2%E7%AC%AC%E4%B8%89%E6%AD%A5%EF%BC%9A%E5%9F%9F%E5%90%8D%E8%B4%AD%E4%B9%B0%E5%8F%8A%E9%85%8D%E7%BD%AE/)
+<4>. [搭建博客最终篇：博客的成功搭建](http://www.charlycheng.xyz/2016/12/05/%E6%90%AD%E5%BB%BA%E5%8D%9A%E5%AE%A2%E6%9C%80%E7%BB%88%E7%AF%87%EF%BC%9A%E5%8D%9A%E5%AE%A2%E7%9A%84%E6%88%90%E5%8A%9F%E6%90%AD%E5%BB%BA/)
+
+

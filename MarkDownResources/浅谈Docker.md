@@ -1,5 +1,3 @@
-# 浅谈Docker
-
 ## 认识Docker
 
 ### 什么是Docker?
@@ -764,6 +762,10 @@ services:
 ```
 
 相同的服务可以在不同的网络有不同的别名。
+
+##### privileged
+
+`privileged`参数大约在docker v0.6版引入，使用该参数，container内的root拥有真正的root权限，此时docker将拥有访问宿主机所有设备的权限。否则，container内的root用户只是拥有宿主机的普通用户权限。
 
 ## 构建自己的镜像
 
