@@ -127,11 +127,6 @@ PIPES_AS_CONCAT
 ANSI_QUOTES
 ```
 
-## mysql双机热备
-
-```
-# 主数据库中创建专门用于备份的用户，从数据库使用之
-grant replication slave on *.* to 'repl_user'@'192.168.1.125' identified by 'password';
-```
+//todo: mysql双机热备
 
 
