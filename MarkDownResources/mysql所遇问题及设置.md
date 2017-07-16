@@ -127,6 +127,28 @@ PIPES_AS_CONCAT
 ANSI_QUOTES
 ```
 
+## 解决The following signatures were invalid错误
+
+起因:mysql的docker镜像中执行apt-get报错如下：
+
+```
+W: GPG error: http://repo.mysql.com jessie InRelease: The following signatures were invalid: KEYEXPIRED 1487236823 KEYEXPIRED 1487236823 KEYEXPIRED 1487236823
+```
+
+临时的解决方案是执行如下代码:
+
+```
+apt-key adv --keyserver pgp.mit.edu --recv-keys A4A9406876FCBD3C456770C88C718D3B5072E1F5
+```
+
+参考自:
+
+[INFORMATION: Mysql APT GPG key expired](https://i-mscp.net/index.php/Thread/16085-INFORMATION-Mysql-APT-GPG-key-expired/)
+
+[Why MySQL Repository Key suddenly expired? [duplicate]](https://askubuntu.com/questions/884798/why-mysql-repository-key-suddenly-expired)
+
+[Bug #85029	APT GPG Key Expired](https://bugs.mysql.com/bug.php?id=85029)
+
 //todo: mysql双机热备
 
 

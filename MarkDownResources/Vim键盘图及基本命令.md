@@ -214,6 +214,8 @@
 
 * <font color = "green">`.`</font> -> <font color = "green">`重复最后一条修改正文的命令`</font>
 
+* <font color = "green">`ctrl + r`</font> -> <font color = "green">`取消撤销命令(前一条撤销命令)`</font>
+
 #### 文本选中
 
  * <font color = "green">`v`</font> -> <font color = "green">`字符选中命令`</font>
@@ -391,6 +393,15 @@
 * <font color = "green">`J`</font> -> <font color = "green">`拼接当前行和下一行`</font>
 
 * <font color = "green">`gJ`</font> -> <font color = "green">`拼接当前行和下一行，合并后不留空格`</font>
+
+## 整行拷贝或移动
+
+```
+# 将第三行拷贝到第10行的下一行.
+:3t10
+# 将第三行移动到第10行的下一行.
+:3m10
+```
 
 ## 小技巧
 

@@ -1,10 +1,10 @@
 ## Idea常用设置
 
-### JRebel安装设置
+### JRebel
 
-仅应用于Spring boot + JRebel实现热部署，并不适应所有的项目配置。
+以下关于JRebel的配置可能仅应用于Spring boot + JRebel实现热部署，并不适应所有的项目配置。
 
-### 安装JRebel
+#### 安装JRebel
 
 `Preferences`-`Plugins`搜索`JRebel`安装`JRebel for IntelliJ`
 
@@ -12,7 +12,7 @@
 
 `Preferences`-`JRebel`-`Startup`勾选`Run via IDE`
 
-### 配置JRebel使用
+#### 配置JRebel使用
 
 JRebel需要项目编译后才能启用，所以针对Idea需要进行自动编译或快捷键编译的设置。
 
@@ -30,11 +30,35 @@ JRebel需要项目编译后才能启用，所以针对Idea需要进行自动编�
 
 启用该配置，此时自动保存编译的宏生效。
 
-### 使用JRebel启动Spring boot
+#### 使用JRebel启动Spring boot
 
 `Application.java`右键`Debug with JRebel`
 
 启动工程后，每次修改或添加删除方法之后，只需使用快捷键`Ctrl+s`就可以实现热部署。
+
+### Working directory设置
+
+通过设置`Working directory`选项, 可以达到更改`System.getProperty("user.dir")`的目的.
+
+#### 设置方式
+
+`Select Run/Debug Configuration` -> `Edit Configurations...` -> `Working directory`
+
+### Idea中Maven使用
+
+* 要将Maven项目打成可执行`Jar`包, 需要在`pom.xml`中定义`mainClass`标签,如:
+
+```
+<archive>
+    <manifest>
+        <mainClass>com.tilkai.xxxx.XxxxApp</mainClass>
+    </manifest>
+</archive>
+```
+
+* 被依赖模块需要在`Maven Projects` -> `Lifecycle` -> `install`
+
+* 被打包模块需要在`Maven Projects` -> `Lifecycle` -> `package`
 
 ## Idea DataGrip
 

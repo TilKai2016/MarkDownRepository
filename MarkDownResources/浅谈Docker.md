@@ -940,6 +940,10 @@ docker login hub.docker.com
 
 待补充和实践的内容还包括Docker中搭建MariaDB和Python环境的操作。
 
+```
+docker push hub.solarule.cn/deploy-by-zzl/hpvm-web
+```
+
 ### 常用Docker命令
 #### 查看本地镜像
 

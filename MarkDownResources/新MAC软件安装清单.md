@@ -19,10 +19,9 @@ brew install wget
 
 <3>. 安装alfred+有道插件
 <4>. 安装MWeb
-<5>. 安装idea(内部破解idea.xxxxx.cn)
+<5>. 安装idea
 <6>. 安装cheatsheet
-<7>. 安装搜狗输入法(官网下载)
-<8>. 配置Git(此处适配公司内部GitLab)
+<7>. 配置Git(此处适配公司内部GitLab)
 
 ①.配置用户名、邮箱
 >

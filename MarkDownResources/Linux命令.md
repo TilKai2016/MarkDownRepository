@@ -119,7 +119,9 @@ whoami
 who
 ```
 
-## 查看线程
+## 进程相关
+
+### 查看线程
 
 ```
 # 查看所有ssh连接
@@ -128,9 +130,9 @@ ps -aux | grep ssh
 ps -ef | grep collect
 ```
 
-## 查看端口占用
+### 查看端口占用
 
-### netstat命令
+#### netstat命令
 
 netstat命令用于展示网络信息，常用参数如下：
 
@@ -149,7 +151,7 @@ netstat命令用于展示网络信息，常用参数如下：
 netstat -an | grep port
 ```
 
-### lsof命令
+#### lsof命令
 
 lsof：list open files 用于列出当前系统打开文件的工具。
 
@@ -178,6 +180,23 @@ lsof [参数][文件]
 lsof -i
 lsof -i:port
 ```
+
+## 杀死进程
+
+```
+# 找到占用9090端口的进称号(PID)
+lsof -i:9090
+```
+
+普通用法：
+
+`kill pid`
+
+如果直接kill无法杀死进程，强制杀死进程的终极办法：
+
+`kill -9 pid`
+
+`kill -9`又可以写作`kill -s 9`，其中-s 9指定了传递给进程的信号是9，即强制、尽快终止进程。
 
 ## 端口转发
 
@@ -394,4 +413,14 @@ apt-get install -y net-tools
 ```
 apt-get install vim
 ```
+
+## Mac下设置展示目录树
+
+在.zshrc中添加:
+
+```
+alias tree="find . -print | sed -e 's;[^/]*/;|____;g;s;____|; |;g'"
+```
+
+
 
